@@ -1,0 +1,57 @@
+<!-- Tells the browser this document uses modern HTML5 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Sets the character encoding so text displays correctly -->
+  <meta charset="UTF-8" />
+
+  <!-- Sets the browser tab title -->
+  <title>Login | Plantiful</title>
+
+  <!-- Loads the shared CSS file from the public folder -->
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- Site navigation -->
+  <nav class="navbar">
+    <div class="logo">Plantiful</div>
+
+    <div class="nav-links">
+      <a href="/">Home</a>
+    </div>
+  </nav>
+
+  <!-- Main login area -->
+  <main class="auth-page">
+    <section class="auth-panel">
+      <h1>Login</h1>
+
+      <!-- EJS checks whether the server sent an error message. -->
+      <!-- If error exists, show it to the user. -->
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
+
+      <!-- This form sends the username and password to POST /login. -->
+      <form action="/login" method="POST" class="auth-form">
+        <!-- The label's for="" value connects it to the input's id. -->
+        <label for="username">Username</label>
+
+        <!-- name="username" becomes req.body.username in Express. -->
+        <input id="username" type="text" name="username" autocomplete="username" />
+
+        <label for="password">Password</label>
+
+        <!-- type="password" hides the characters as the user types. -->
+        <!-- name="password" becomes req.body.password in Express. -->
+        <input id="password" type="password" name="password" autocomplete="current-password" />
+
+        <!-- Clicking this submits the form to the server. -->
+        <button type="submit">Log in</button>
+      </form>
+
+      <p class="hint">Training account: student / learn123</p>
+    </section>
+  </main>
+</body>
+</html>
