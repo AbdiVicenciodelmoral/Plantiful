@@ -1,6 +1,6 @@
 # Plantiful
 
-Plantiful is a deliberately vulnerable Express/EJS training app for practicing web security basics in a local lab.
+Plantiful is a deliberately vulnerable React + Express training app for practicing web security basics in a local lab.
 
 The goal of this project is to build a safe playground where learners can practice finding and understanding common web vulnerabilities. The app is intentionally insecure, so only run it locally or in a controlled training environment.
 
@@ -8,7 +8,8 @@ The goal of this project is to build a safe playground where learners can practi
 
 - Node.js
 - Express
-- EJS templates
+- React
+- Vite
 - SQLite
 - CSS
 
@@ -31,26 +32,49 @@ git clone https://github.com/AbdiVicenciodelmoral/Plantiful.git
 cd Plantiful
 ```
 
-Install app dependencies:
+Install backend dependencies:
 
 ```bash
 cd app
 npm install
 ```
 
-Start the server:
+Install frontend dependencies:
 
 ```bash
+cd ../client
+npm install
+```
+
+Start the backend API from `app/`:
+
+```bash
+cd ../app
 npm start
 ```
 
-Then open `http://localhost:3000`.
+Start the React frontend from `client/` in a second terminal:
 
-For development with automatic restarts, use:
+```bash
+cd client
+npm run dev
+```
+
+Then open the Vite URL shown in the terminal, usually `http://localhost:5173`.
+
+For backend development with automatic restarts, use this from `app/`:
 
 ```bash
 npm run dev
 ```
+
+For a production-style build, run this from `client/`:
+
+```bash
+npm run build
+```
+
+After that, the Express server can serve the built React app from `http://localhost:3000`.
 
 ## Training Accounts
 
@@ -113,14 +137,16 @@ Then open a pull request on GitHub.
 ```txt
 Plantiful/
   app/
-    public/
-      style.css
-    views/
-      dashboard.ejs
-      home.ejs
-      login.ejs
     package.json
     server.js
+  client/
+    src/
+      App.jsx
+      main.jsx
+      styles.css
+    index.html
+    package.json
+    vite.config.js
   db/
     .gitkeep
   README.md
@@ -134,7 +160,8 @@ For now, it is better to keep the local setup simple while the app structure, ro
 
 Good Docker next steps later:
 
-- Add a `Dockerfile` for the Express app.
+- Add a `Dockerfile` for the Express API.
+- Decide whether React should be built inside the backend image or run as a separate frontend service.
 - Add a `.dockerignore`.
 - Add a `docker-compose.yml` service for the app.
 - Mount the local project for development.

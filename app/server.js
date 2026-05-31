@@ -4,6 +4,7 @@ const sqlite3 = require("sqlite3").verbose();
 
 const app = express();
 const PORT = 3000;
+const CLIENT_DIST_PATH = path.join(__dirname, "..", "client", "dist");
 
 // Store the SQLite database outside the app folder, in D:\Plantiful\db.
 // __dirname points to D:\Plantiful\App, so ".." moves up to D:\Plantiful.
@@ -47,11 +48,8 @@ db.serialize(() => {
   `);
 });
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
 
 // Converts the browser's Cookie header into an object we can read.
 // Example:
@@ -99,27 +97,30 @@ function requireLogin(req, res, next) {
   const user = getCurrentUser(req);
 
   if (!user) {
-    return res.redirect("/login?error=Please log in first.");
+    return res.status(401).json({
+      error: "Please log in first.",
+    });
   }
 
   req.user = user;
   next();
 }
 
-app.get("/", (req, res) => {
-  res.render("home", {
+app.get("/api/me", (req, res) => {
+  res.json({
     user: getCurrentUser(req),
   });
 });
 
-app.get("/login", (req, res) => {
-  res.render("login", {
-    error: req.query.error || null,
+app.get("/api/dashboard", requireLogin, (req, res) => {
+  res.json({
+    user: req.user,
+    message: "You reached this API route because the server found a session cookie.",
   });
 });
 
-app.post("/login", (req, res) => {
-  // These values come from the name="" attributes in the login form.
+app.post("/api/login", (req, res) => {
+  // These values come from the JSON body sent by the React login form.
   const { username, password } = req.body;
 
   // Intentionally insecure for your training playground:
@@ -128,25 +129,19 @@ app.post("/login", (req, res) => {
   //
   // Secure code would use placeholders like:
   // SELECT * FROM users WHERE username = ? AND password = ?
-  const loginQuery = `
-    SELECT id, username, role
-    FROM users
-    WHERE username = '${username}'
-      AND password = '${password}'
-    LIMIT 1
-  `;
+  const loginQuery = `SELECT id, username, role FROM users WHERE username = '${username}' AND password = '${password}' LIMIT 1`;
 
   // db.get() runs a SELECT query and returns the first matching row.
   db.get(loginQuery, (err, user) => {
     if (err) {
-      return res.render("login", {
+      return res.status(500).json({
         error: "Database error during login.",
       });
     }
 
     // If no matching account exists, keep the user on the login page.
     if (!user) {
-      return res.render("login", {
+      return res.status(401).json({
         error: "Invalid username or password.",
       });
     }
@@ -166,20 +161,32 @@ app.post("/login", (req, res) => {
     // This is also missing security flags on purpose for the lab.
     res.setHeader("Set-Cookie", `session=${encodeURIComponent(sessionCookie)}; Path=/`);
 
-    res.redirect("/dashboard");
+    res.json({
+      user: sessionData,
+    });
   });
 });
 
-app.get("/dashboard", requireLogin, (req, res) => {
-  res.render("dashboard", {
-    user: req.user,
-  });
-});
-
-app.post("/logout", (req, res) => {
+app.post("/api/logout", (req, res) => {
   // Setting Max-Age=0 tells the browser to delete the cookie.
   res.setHeader("Set-Cookie", "session=; Path=/; Max-Age=0");
-  res.redirect("/");
+  res.json({
+    success: true,
+  });
+});
+
+// When the React app is built, Express serves those static files.
+// During development, Vite serves the React app instead.
+app.use(express.static(CLIENT_DIST_PATH));
+
+// Any non-API route should return React's index.html so the frontend router
+// can decide which screen to show.
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(CLIENT_DIST_PATH, "index.html"), (err) => {
+    if (err) {
+      res.status(404).send("React app is not built yet. Run npm install and npm run build in the client folder.");
+    }
+  });
 });
 
 app.listen(PORT, () => {
