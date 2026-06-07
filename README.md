@@ -224,6 +224,12 @@ Plantiful/
     server.js
   client/
     src/
+      components/
+        Navbar.jsx
+      pages/
+        Dashboard.jsx
+        Home.jsx
+        Login.jsx
       App.jsx
       main.jsx
       styles.css
