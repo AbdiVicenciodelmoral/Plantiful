@@ -80,11 +80,24 @@ After that, the Express server can serve the built React app from `http://localh
 
 Use this when you are coming back to the project after your computer was restarted or after the servers were stopped.
 
-Open one PowerShell window for the backend:
+First, open a terminal and go to wherever you cloned the repo.
 
-```powershell
-D:
-cd D:\Plantiful\App
+Examples:
+
+```bash
+cd Plantiful
+```
+
+or, if you cloned it somewhere specific:
+
+```bash
+cd path/to/Plantiful
+```
+
+Open one terminal window for the backend:
+
+```bash
+cd app
 npm run dev
 ```
 
@@ -94,11 +107,10 @@ You should see something like:
 Server running on http://localhost:3000
 ```
 
-Open a second PowerShell window for the React frontend:
+Open a second terminal window for the React frontend. From the project root:
 
-```powershell
-D:
-cd D:\Plantiful\client
+```bash
+cd client
 npm run dev
 ```
 
@@ -108,7 +120,7 @@ You should see a Vite URL, usually:
 http://localhost:5173
 ```
 
-Keep both PowerShell windows open while you work.
+Keep both terminal windows open while you work.
 
 ## Which Localhost URL Should I Use?
 
@@ -140,9 +152,8 @@ http://localhost:3000  Express backend plus built React app
 
 If you edit React or CSS files, `localhost:3000` will not show those frontend changes until you rebuild:
 
-```powershell
-D:
-cd D:\Plantiful\client
+```bash
+cd client
 npm run build
 ```
 
@@ -153,7 +164,7 @@ Editing the frontend: use http://localhost:5173
 Testing the current built app or API: use http://localhost:3000
 ```
 
-To stop either server, click inside its PowerShell window and press:
+To stop either server, click inside its terminal window and press:
 
 ```txt
 CTRL + C
