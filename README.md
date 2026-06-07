@@ -76,6 +76,89 @@ npm run build
 
 After that, the Express server can serve the built React app from `http://localhost:3000`.
 
+## Daily Restart Workflow
+
+Use this when you are coming back to the project after your computer was restarted or after the servers were stopped.
+
+Open one PowerShell window for the backend:
+
+```powershell
+D:
+cd D:\Plantiful\App
+npm run dev
+```
+
+You should see something like:
+
+```txt
+Server running on http://localhost:3000
+```
+
+Open a second PowerShell window for the React frontend:
+
+```powershell
+D:
+cd D:\Plantiful\client
+npm run dev
+```
+
+You should see a Vite URL, usually:
+
+```txt
+http://localhost:5173
+```
+
+Keep both PowerShell windows open while you work.
+
+## Which Localhost URL Should I Use?
+
+Use `http://localhost:5173` when you are actively editing the React frontend.
+
+This is the live Vite development server. Changes to files like these update right away:
+
+```txt
+client/src/App.jsx
+client/src/styles.css
+```
+
+Use `http://localhost:3000` when you want to test the backend API or the built version of the site.
+
+The backend always runs on `3000`. It handles API routes like:
+
+```txt
+POST /api/login
+GET /api/me
+POST /api/logout
+```
+
+The important difference:
+
+```txt
+http://localhost:5173  live React development site
+http://localhost:3000  Express backend plus built React app
+```
+
+If you edit React or CSS files, `localhost:3000` will not show those frontend changes until you rebuild:
+
+```powershell
+D:
+cd D:\Plantiful\client
+npm run build
+```
+
+Simple rule:
+
+```txt
+Editing the frontend: use http://localhost:5173
+Testing the current built app or API: use http://localhost:3000
+```
+
+To stop either server, click inside its PowerShell window and press:
+
+```txt
+CTRL + C
+```
+
 ## Training Accounts
 
 The app seeds these users into SQLite when the server starts:
