@@ -106,6 +106,25 @@ function requireLogin(req, res, next) {
   next();
 }
 
+function setSessionCookie(res, user) {
+  // Intentionally insecure for your training playground:
+  // This stores identity and role directly in a browser-controlled cookie.
+  // A secure app would use a signed server-side session id instead.
+  const sessionData = {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+  };
+
+  const sessionCookie = Buffer.from(JSON.stringify(sessionData)).toString("base64");
+
+  // Set-Cookie tells the browser to save the session cookie.
+  // This is also missing security flags on purpose for the lab.
+  res.setHeader("Set-Cookie", `session=${encodeURIComponent(sessionCookie)}; Path=/`);
+
+  return sessionData;
+}
+
 app.get("/api/me", (req, res) => {
   res.json({
     user: getCurrentUser(req),
@@ -146,22 +165,78 @@ app.post("/api/login", (req, res) => {
       });
     }
 
-    // Intentionally insecure for your training playground:
-    // This stores identity and role directly in a browser-controlled cookie.
-    // A secure app would use a signed server-side session id instead.
-    const sessionData = {
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    };
-
-    const sessionCookie = Buffer.from(JSON.stringify(sessionData)).toString("base64");
-
-    // Set-Cookie tells the browser to save the session cookie.
-    // This is also missing security flags on purpose for the lab.
-    res.setHeader("Set-Cookie", `session=${encodeURIComponent(sessionCookie)}; Path=/`);
+    const sessionData = setSessionCookie(res, user);
 
     res.json({
+      user: sessionData,
+    });
+  });
+});
+
+app.post("/api/register", (req, res) => {
+  const { username = "", password = "" } = req.body;
+
+  // Training note:
+  // This currently allows almost any username characters. That is useful for
+  // a playground because learners can test how stored data behaves later.
+  //
+  // Vulnerability introduction point:
+  // If this username is later rendered as raw HTML, characters like <, >, ',
+  // and " can become part of a stored XSS lesson.
+  //
+  // Remediation point:
+  // Validate allowed username characters, set length limits, and keep output
+  // encoded when displaying stored usernames.
+  if (!username || !password) {
+    return res.status(400).json({
+      error: "Username and password are required.",
+    });
+  }
+
+  // Training note:
+  // This message reveals whether a username already exists. That can become
+  // a username-enumeration lesson because attackers can discover valid users.
+  //
+  // Remediation point:
+  // Use a generic response such as "Unable to create account" when you do not
+  // want to reveal whether an account already exists.
+  const insertUserQuery = `
+    INSERT INTO users (username, password, role)
+    VALUES (?, ?, 'user')
+  `;
+
+  // Remediation example:
+  // This route uses placeholders for the INSERT, which prevents quote
+  // characters from breaking out of the SQL string. Compare this with the
+  // intentionally vulnerable /api/login route above.
+  db.run(insertUserQuery, [username, password], function handleInsert(err) {
+    if (err) {
+      if (err.message.includes("UNIQUE constraint failed")) {
+        return res.status(409).json({
+          error: "Username is already taken.",
+        });
+      }
+
+      return res.status(500).json({
+        error: "Database error during account creation.",
+      });
+    }
+
+    // Training note:
+    // Passwords are still stored in plain text in this app. That is
+    // intentionally insecure for the playground.
+    //
+    // Remediation point:
+    // Hash passwords with a password hashing algorithm before storing them.
+    const user = {
+      id: this.lastID,
+      username,
+      role: "user",
+    };
+
+    const sessionData = setSessionCookie(res, user);
+
+    res.status(201).json({
       user: sessionData,
     });
   });

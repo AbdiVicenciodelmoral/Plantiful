@@ -241,6 +241,7 @@ Plantiful/
         Dashboard.jsx
         Home.jsx
         Login.jsx
+        Register.jsx
       App.jsx
       main.jsx
       styles.css

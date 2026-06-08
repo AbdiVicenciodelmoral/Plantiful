@@ -149,6 +149,17 @@ input {
   margin-top: 8px;
 }
 
+.secondary-action {
+  background: transparent;
+  border: none;
+  color: #2f6b3f;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: bold;
+  margin-top: 16px;
+  padding: 0;
+}
+
 .error {
   color: #9b1c31;
   font-weight: bold;

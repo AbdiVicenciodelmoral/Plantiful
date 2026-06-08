@@ -3,10 +3,19 @@ import Navbar from "./components/Navbar.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 
 function App() {
   const [screen, setScreen] = useState(() => {
-    return window.location.pathname === "/login" ? "login" : "home";
+    if (window.location.pathname === "/login") {
+      return "login";
+    }
+
+    if (window.location.pathname === "/register") {
+      return "register";
+    }
+
+    return "home";
   });
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -25,13 +34,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const path = screen === "login" ? "/login" : "/";
+    const paths = {
+      home: "/",
+      login: "/login",
+      register: "/register",
+    };
+    const path = paths[screen] || "/";
     window.history.replaceState(null, "", path);
   }, [screen]);
 
   const activeScreen = useMemo(() => {
     if (screen === "login") {
       return "login";
+    }
+
+    if (screen === "register") {
+      return "register";
     }
 
     if (user) {
@@ -47,6 +65,10 @@ function App() {
 
   function showLogin() {
     setScreen("login");
+  }
+
+  function showRegister() {
+    setScreen("register");
   }
 
   async function handleLogout() {
@@ -78,7 +100,12 @@ function App() {
       ) : (
         <>
           {activeScreen === "home" && <Home />}
-          {activeScreen === "login" && <Login onLogin={handleLogin} />}
+          {activeScreen === "login" && (
+            <Login onCreateAccount={showRegister} onLogin={handleLogin} />
+          )}
+          {activeScreen === "register" && (
+            <Register onBackToLogin={showLogin} onRegister={handleLogin} />
+          )}
           {activeScreen === "dashboard" && <Dashboard user={user} />}
         </>
       )}
