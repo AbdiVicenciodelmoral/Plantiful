@@ -1,12 +1,20 @@
 function Dashboard({ user }) {
+  const welcomeMessage = `Welcome, ${user.username}`;
+
   return (
     <main className="dashboard">
       <section>
-        {/* React encodes this username by default, which helps prevent stored XSS.
-            Vulnerability introduction point: rendering user.username as raw HTML
-            could let stored characters like <, >, ', and " affect the page.
-            Remediation point: keep output encoded or sanitize before using raw HTML. */}
-        <h1>Welcome, {user.username}</h1>
+        {/* Intentionally vulnerable for the training playground:
+            dangerouslySetInnerHTML tells React to render this string as HTML
+            instead of encoded text. That means stored username characters like
+            <, >, ', and " can affect the page if the browser treats them as
+            markup.
+
+            Remediation point:
+            Replace this with normal React output:
+            <h1>Welcome, {user.username}</h1>
+            Normal React output encodes the username by default. */}
+        <h1 dangerouslySetInnerHTML={{ __html: welcomeMessage }} />
         <p>You reached this page because the server found a session cookie.</p>
       </section>
 
