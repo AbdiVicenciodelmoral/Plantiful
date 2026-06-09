@@ -228,16 +228,8 @@ app.post("/api/register", (req, res) => {
     //
     // Remediation point:
     // Hash passwords with a password hashing algorithm before storing them.
-    const user = {
-      id: this.lastID,
-      username,
-      role: "user",
-    };
-
-    const sessionData = setSessionCookie(res, user);
-
     res.status(201).json({
-      user: sessionData,
+      message: "Account created. Please log in.",
     });
   });
 });

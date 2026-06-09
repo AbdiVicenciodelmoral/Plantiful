@@ -165,6 +165,11 @@ input {
   font-weight: bold;
 }
 
+.success {
+  color: #2f6b3f;
+  font-weight: bold;
+}
+
 .hint {
   color: #61735e;
   font-size: 14px;

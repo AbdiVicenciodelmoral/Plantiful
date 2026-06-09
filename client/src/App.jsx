@@ -19,6 +19,7 @@ function App() {
   });
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
+  const [loginNotice, setLoginNotice] = useState("");
 
   useEffect(() => {
     fetch("/api/me", {
@@ -64,10 +65,12 @@ function App() {
   }
 
   function showLogin() {
+    setLoginNotice("");
     setScreen("login");
   }
 
   function showRegister() {
+    setLoginNotice("");
     setScreen("register");
   }
 
@@ -83,7 +86,13 @@ function App() {
 
   function handleLogin(nextUser) {
     setUser(nextUser);
+    setLoginNotice("");
     setScreen("home");
+  }
+
+  function handleRegisterSuccess(message) {
+    setLoginNotice(message);
+    setScreen("login");
   }
 
   return (
@@ -101,10 +110,17 @@ function App() {
         <>
           {activeScreen === "home" && <Home />}
           {activeScreen === "login" && (
-            <Login onCreateAccount={showRegister} onLogin={handleLogin} />
+            <Login
+              notice={loginNotice}
+              onCreateAccount={showRegister}
+              onLogin={handleLogin}
+            />
           )}
           {activeScreen === "register" && (
-            <Register onBackToLogin={showLogin} onRegister={handleLogin} />
+            <Register
+              onBackToLogin={showLogin}
+              onRegisterSuccess={handleRegisterSuccess}
+            />
           )}
           {activeScreen === "dashboard" && <Dashboard user={user} />}
         </>

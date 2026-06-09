@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Register({ onBackToLogin, onRegister }) {
+function Register({ onBackToLogin, onRegisterSuccess }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,7 +28,7 @@ function Register({ onBackToLogin, onRegister }) {
       return;
     }
 
-    onRegister(data.user);
+    onRegisterSuccess(data.message || "Account created. Please log in.");
   }
 
   return (

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Login({ onCreateAccount, onLogin }) {
+function Login({ notice, onCreateAccount, onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -36,6 +36,7 @@ function Login({ onCreateAccount, onLogin }) {
       <section className="auth-panel">
         <h1>Login</h1>
 
+        {notice && <p className="success">{notice}</p>}
         {error && <p className="error">{error}</p>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
