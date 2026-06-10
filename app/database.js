@@ -9,21 +9,25 @@ const baselineUsers = [
   {
     username: "admin",
     password: "plantiful123",
+    email: "admin@plantiful.local",
     role: "admin",
   },
   {
     username: "student",
     password: "learn123",
+    email: "student@plantiful.local",
     role: "user",
   },
   {
     username: "manager",
     password: "inventory123",
+    email: "manager@plantiful.local",
     role: "manager",
   },
   {
     username: "victim",
     password: "password123",
+    email: "victim@plantiful.local",
     role: "user",
   },
 ];
@@ -64,9 +68,23 @@ async function createSchema(db) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
+      email TEXT UNIQUE,
       role TEXT NOT NULL
     )
   `);
+}
+
+async function ensureEmailColumn(db) {
+  try {
+    // SQLite cannot add a UNIQUE column to an existing table with ALTER TABLE.
+    // New reset databases still get the UNIQUE constraint from createSchema().
+    // Existing local databases get a plain email column so the migration works.
+    await run(db, "ALTER TABLE users ADD COLUMN email TEXT");
+  } catch (err) {
+    if (!err.message.includes("duplicate column name")) {
+      throw err;
+    }
+  }
 }
 
 async function seedBaselineUsers(db) {
@@ -74,16 +92,27 @@ async function seedBaselineUsers(db) {
     await run(
       db,
       `
-        INSERT OR IGNORE INTO users (username, password, role)
-        VALUES (?, ?, ?)
+        INSERT OR IGNORE INTO users (username, password, email, role)
+        VALUES (?, ?, ?, ?)
       `,
-      [user.username, user.password, user.role]
+      [user.username, user.password, user.email, user.role]
+    );
+
+    await run(
+      db,
+      `
+        UPDATE users
+        SET password = ?, email = ?, role = ?
+        WHERE username = ?
+      `,
+      [user.password, user.email, user.role, user.username]
     );
   }
 }
 
 async function initializeDatabase(db) {
   await createSchema(db);
+  await ensureEmailColumn(db);
   await seedBaselineUsers(db);
 }
 

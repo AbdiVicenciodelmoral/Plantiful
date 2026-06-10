@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Navbar from "./components/Navbar.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Home from "./pages/Home.jsx";
+import LoginHelp from "./pages/LoginHelp.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 
@@ -13,6 +14,10 @@ function App() {
 
     if (window.location.pathname === "/register") {
       return "register";
+    }
+
+    if (window.location.pathname === "/login-help") {
+      return "loginHelp";
     }
 
     return "home";
@@ -38,6 +43,7 @@ function App() {
     const paths = {
       home: "/",
       login: "/login",
+      loginHelp: "/login-help",
       register: "/register",
     };
     const path = paths[screen] || "/";
@@ -51,6 +57,10 @@ function App() {
 
     if (screen === "register") {
       return "register";
+    }
+
+    if (screen === "loginHelp") {
+      return "loginHelp";
     }
 
     if (user) {
@@ -72,6 +82,11 @@ function App() {
   function showRegister() {
     setLoginNotice("");
     setScreen("register");
+  }
+
+  function showLoginHelp() {
+    setLoginNotice("");
+    setScreen("loginHelp");
   }
 
   async function handleLogout() {
@@ -113,9 +128,11 @@ function App() {
             <Login
               notice={loginNotice}
               onCreateAccount={showRegister}
+              onLoginHelp={showLoginHelp}
               onLogin={handleLogin}
             />
           )}
+          {activeScreen === "loginHelp" && <LoginHelp onBackToLogin={showLogin} />}
           {activeScreen === "register" && (
             <Register
               onBackToLogin={showLogin}

@@ -260,6 +260,7 @@ Plantiful/
       pages/
         Dashboard.jsx
         Home.jsx
+        LoginHelp.jsx
         Login.jsx
         Register.jsx
       App.jsx

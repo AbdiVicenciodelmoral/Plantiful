@@ -206,6 +206,57 @@ app.post("/api/register", (req, res) => {
   });
 });
 
+app.post("/api/login-help", (req, res) => {
+  const { identifier = "" } = req.body;
+
+  // Intentionally vulnerable for the training playground:
+  // This endpoint is supposed to be a "lost username/password" helper, but it
+  // directly returns usernames and plaintext passwords. Real applications
+  // should never reveal passwords. They should send a time-limited password
+  // reset link or code instead.
+  //
+  // Vulnerability introduction point:
+  // The identifier is inserted directly into SQL, so quote characters can break
+  // out of the string and change the query. This creates a second SQL injection
+  // lesson separate from /api/login.
+  //
+  // Remediation point:
+  // Use placeholders:
+  // WHERE username = ? OR email = ?
+  const helpQuery = `
+    SELECT id, username, password, email, role
+    FROM users
+    WHERE username = '${identifier}'
+       OR email = '${identifier}'
+  `;
+
+  db.all(helpQuery, (err, accounts) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Database error during account lookup.",
+      });
+    }
+
+    // Intentionally vulnerable for the training playground:
+    // This message confirms whether an account exists. That is username/email
+    // enumeration, which can help attackers build valid target lists.
+    //
+    // Remediation point:
+    // Use a generic response such as:
+    // "If an account exists, recovery instructions were sent."
+    if (accounts.length === 0) {
+      return res.status(404).json({
+        error: `No account found for "${identifier}".`,
+      });
+    }
+
+    res.json({
+      message: "Account recovery details found.",
+      accounts,
+    });
+  });
+});
+
 app.post("/api/logout", (req, res) => {
   // Setting Max-Age=0 tells the browser to delete the cookie.
   res.setHeader("Set-Cookie", "session=; Path=/; Max-Age=0");

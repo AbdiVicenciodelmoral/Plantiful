@@ -154,7 +154,7 @@ input {
   border: none;
   color: #2f6b3f;
   cursor: pointer;
-  display: inline-block;
+  display: block;
   font-weight: bold;
   margin-top: 16px;
   padding: 0;
@@ -173,6 +173,23 @@ input {
 .hint {
   color: #61735e;
   font-size: 14px;
+}
+
+.recovery-results {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.recovery-card {
+  border: 1px solid #dfe7d8;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.recovery-card h2 {
+  font-size: 20px;
+  margin-top: 0;
 }
 
 .secret-box {

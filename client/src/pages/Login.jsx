@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Login({ notice, onCreateAccount, onLogin }) {
+function Login({ notice, onCreateAccount, onLogin, onLoginHelp }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -63,6 +63,10 @@ function Login({ notice, onCreateAccount, onLogin }) {
 
         <button className="secondary-action" type="button" onClick={onCreateAccount}>
           Create account
+        </button>
+
+        <button className="secondary-action" type="button" onClick={onLoginHelp}>
+          Forgot username or password?
         </button>
 
         <p className="hint">Training account: student / learn123</p>
