@@ -191,6 +191,26 @@ That file is intentionally ignored by Git because it is generated locally.
 
 To reset the database, stop the server, delete `db/plantiful.db`, and start the server again. The starter users will be recreated automatically.
 
+You can also reset the database with:
+
+```bash
+cd app
+npm run reset-db
+```
+
+This removes learner-created accounts and restores the baseline demo accounts.
+
+The reset command uses `db/plantiful.db` by default. Advanced users can point it at another SQLite file with `PLANTIFUL_DB_PATH` when testing reset behavior.
+
+Baseline accounts:
+
+```txt
+admin / plantiful123
+student / learn123
+manager / inventory123
+victim / password123
+```
+
 ## Working With Others
 
 Before making changes, pull the latest code:

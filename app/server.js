@@ -1,51 +1,23 @@
 const express = require("express");
 const path = require("path");
-const sqlite3 = require("sqlite3").verbose();
+const {
+  DB_PATH,
+  initializeDatabase,
+  openDatabase,
+} = require("./database");
 
 const app = express();
 const PORT = 3000;
 const CLIENT_DIST_PATH = path.join(__dirname, "..", "client", "dist");
 
-// Store the SQLite database outside the app folder, in D:\Plantiful\db.
-// __dirname points to D:\Plantiful\App, so ".." moves up to D:\Plantiful.
-const DB_PATH = path.join(__dirname, "..", "db", "plantiful.db");
-
 // Open a connection to the SQLite database file.
 // If the file does not exist yet, sqlite3 creates it automatically.
-const db = new sqlite3.Database(DB_PATH, (err) => {
-  if (err) {
-    console.error("Could not connect to SQLite:", err.message);
-    return;
-  }
+const db = openDatabase();
 
+initializeDatabase(db).then(() => {
   console.log(`Connected to SQLite database at ${DB_PATH}`);
-});
-
-// Create and seed the users table when the app starts.
-// serialize() makes SQLite run these setup statements in order.
-db.serialize(() => {
-  // Intentionally simple for the training playground:
-  // passwords are stored in plain text so learners can see bad storage clearly.
-  db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      role TEXT NOT NULL
-    )
-  `);
-
-  // INSERT OR IGNORE means these accounts are added only if they do not exist.
-  // That prevents duplicate users every time the server restarts.
-  db.run(`
-    INSERT OR IGNORE INTO users (username, password, role)
-    VALUES ('admin', 'plantiful123', 'admin')
-  `);
-
-  db.run(`
-    INSERT OR IGNORE INTO users (username, password, role)
-    VALUES ('student', 'learn123', 'user')
-  `);
+}).catch((err) => {
+  console.error("Could not initialize SQLite:", err.message);
 });
 
 app.use(express.json());
