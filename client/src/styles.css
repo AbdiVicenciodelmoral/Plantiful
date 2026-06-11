@@ -90,8 +90,95 @@ input {
 .featured,
 .about,
 .dashboard,
+.page-shell,
 .loading-view {
   padding: 48px;
+}
+
+.page-heading {
+  max-width: 760px;
+}
+
+.page-heading h1 {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.page-heading p {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 28px 0;
+}
+
+.toolbar-row input {
+  border: 1px solid #adc8a4;
+  border-radius: 8px;
+  min-width: 260px;
+  padding: 12px;
+}
+
+.toolbar-row button,
+.contact-panel button {
+  background: #2f6b3f;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 12px 16px;
+}
+
+.action-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 28px;
+  max-width: 960px;
+}
+
+.action-tile {
+  background: white;
+  border: 1px solid #dfe7d8;
+  border-radius: 8px;
+  color: #243b2a;
+  cursor: pointer;
+  font-weight: bold;
+  min-height: 72px;
+  padding: 18px;
+  text-align: left;
+}
+
+.account-summary,
+.contact-panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-top: 28px;
+  max-width: 560px;
+  padding: 24px;
+}
+
+.contact-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.contact-panel input,
+.contact-panel textarea {
+  border: 1px solid #adc8a4;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.contact-panel textarea {
+  min-height: 140px;
+  resize: vertical;
 }
 
 .cards {
@@ -235,7 +322,12 @@ input {
   .featured,
   .about,
   .dashboard,
+  .page-shell,
   .loading-view {
     padding: 32px 24px;
+  }
+
+  .page-heading h1 {
+    font-size: 34px;
   }
 }

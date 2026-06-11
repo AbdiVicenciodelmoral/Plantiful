@@ -266,11 +266,19 @@ Plantiful/
       components/
         Navbar.jsx
       pages/
+        Account.jsx
+        AdminDashboard.jsx
+        CareGuides.jsx
+        Contact.jsx
         Dashboard.jsx
         Home.jsx
         LoginHelp.jsx
         Login.jsx
+        PlaceholderPage.jsx
         Register.jsx
+        Reviews.jsx
+        Shop.jsx
+        Workshops.jsx
       App.jsx
       main.jsx
       styles.css
