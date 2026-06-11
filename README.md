@@ -164,6 +164,14 @@ Editing the frontend: use http://localhost:5173
 Testing the current built app or API: use http://localhost:3000
 ```
 
+If Burp's browser has trouble opening `localhost:5173`, try:
+
+```txt
+http://127.0.0.1:5173
+```
+
+The Vite dev server is configured to bind to `127.0.0.1` so proxy tools have a predictable local address.
+
 To stop either server, click inside its terminal window and press:
 
 ```txt
