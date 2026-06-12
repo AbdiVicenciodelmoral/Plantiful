@@ -3,22 +3,38 @@ import PlantCard from "../components/PlantCard.jsx";
 
 function Home() {
   const [plants, setPlants] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(() => {
+    return new URLSearchParams(window.location.search).get("q") || "";
+  });
   const [status, setStatus] = useState("");
 
   useEffect(() => {
-    fetch("/api/plants")
-      .then((response) => response.json())
-      .then((data) => {
-        setPlants(data.plants || []);
-      });
+    const initialQuery = new URLSearchParams(window.location.search).get("q") || "";
+
+    if (initialQuery) {
+      searchPlants(initialQuery);
+      return;
+    }
+
+    loadPlants();
   }, []);
 
-  async function handleSearch(event) {
-    event.preventDefault();
+  async function loadPlants() {
+    const response = await fetch("/api/plants");
+    const data = await response.json();
+
+    if (!response.ok) {
+      setStatus(data.error || "Could not load plant inventory.");
+      return;
+    }
+
+    setPlants(data.plants || []);
+  }
+
+  async function searchPlants(query) {
     setStatus("");
 
-    const response = await fetch(`/api/plants/search?q=${encodeURIComponent(searchTerm)}`);
+    const response = await fetch(`/api/plants/search?q=${encodeURIComponent(query)}`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -28,6 +44,25 @@ function Home() {
 
     setPlants(data.plants || []);
   }
+
+  async function handleSearch(event) {
+    event.preventDefault();
+    const query = searchTerm.trim();
+    const path = query ? `/?q=${encodeURIComponent(query)}` : "/";
+
+    window.history.pushState(null, "", path);
+
+    if (!query) {
+      await loadPlants();
+      return;
+    }
+
+    await searchPlants(query);
+  }
+
+  const searchHeading = searchTerm
+    ? `Plant Search Results for "${searchTerm}"`
+    : "Featured Plants";
 
   return (
     <>
@@ -52,7 +87,11 @@ function Home() {
       </section>
 
       <section className="featured">
-        <h2>{searchTerm ? "Plant Search Results" : "Featured Plants"}</h2>
+        {/* Intentionally vulnerable for reflected-XSS training:
+            The search term comes from the URL query string and is rendered as
+            raw HTML. A safe React version would be:
+            <h2>{searchHeading}</h2> */}
+        <h2 dangerouslySetInnerHTML={{ __html: searchHeading }} />
 
         <div className="cards">
           {plants.slice(0, 6).map((plant) => (
