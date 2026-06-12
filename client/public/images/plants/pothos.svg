@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-label="Pothos plant">
+  <rect width="640" height="480" fill="#edf6e9"/>
+  <rect x="260" y="145" width="120" height="82" rx="14" fill="#9a6a44"/>
+  <path d="M320 220 C300 300 235 345 160 370" fill="none" stroke="#2f6b3f" stroke-width="12"/>
+  <path d="M320 220 C360 300 430 345 520 365" fill="none" stroke="#2f6b3f" stroke-width="12"/>
+  <path d="M175 350 C145 310 185 270 230 300 C235 345 200 370 175 350Z" fill="#3d8a52"/>
+  <path d="M500 340 C465 300 505 260 550 292 C555 335 525 365 500 340Z" fill="#2f6b3f"/>
+  <path d="M270 265 C235 225 275 185 320 215 C330 260 295 288 270 265Z" fill="#4f9d63"/>
+</svg>

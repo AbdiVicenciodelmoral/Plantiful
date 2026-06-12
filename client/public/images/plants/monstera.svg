@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-label="Monstera plant">
+  <rect width="640" height="480" fill="#dcefd4"/>
+  <rect x="270" y="315" width="100" height="90" rx="12" fill="#9a6a44"/>
+  <path d="M320 325 C260 230 205 170 155 130 C245 105 312 150 320 325Z" fill="#2f6b3f"/>
+  <path d="M325 325 C375 220 445 165 520 130 C520 225 435 305 325 325Z" fill="#3d8a52"/>
+  <path d="M320 330 C275 260 275 190 320 105 C365 190 365 260 320 330Z" fill="#276036"/>
+  <path d="M320 330 L320 105" stroke="#dcefd4" stroke-width="10" opacity=".45"/>
+  <circle cx="235" cy="165" r="13" fill="#dcefd4" opacity=".7"/>
+  <circle cx="408" cy="190" r="14" fill="#dcefd4" opacity=".7"/>
+</svg>

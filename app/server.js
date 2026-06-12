@@ -110,6 +110,60 @@ app.get("/api/dashboard", requireLogin, (req, res) => {
   });
 });
 
+app.get("/api/plants", (req, res) => {
+  db.all(
+    `
+      SELECT id, name, description, price, stock, care_level, light, water, image_url
+      FROM plants
+      ORDER BY name
+    `,
+    (err, plants) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading plants.",
+        });
+      }
+
+      res.json({
+        plants,
+      });
+    }
+  );
+});
+
+app.get("/api/plants/search", (req, res) => {
+  const q = req.query.q || "";
+
+  // Intentionally vulnerable for the training playground:
+  // This directly inserts the search term into SQL. A learner can try quote
+  // characters to break out of the LIKE string and change the query.
+  //
+  // Remediation point:
+  // Use placeholders:
+  // WHERE name LIKE ? OR description LIKE ? OR care_level LIKE ?
+  const searchQuery = `
+    SELECT id, name, description, price, stock, care_level, light, water, image_url
+    FROM plants
+    WHERE name LIKE '%${q}%'
+       OR description LIKE '%${q}%'
+       OR care_level LIKE '%${q}%'
+    ORDER BY name
+  `;
+
+  db.all(searchQuery, (err, plants) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Database error while searching plants.",
+      });
+    }
+
+    res.json({
+      query: q,
+      plants,
+    });
+  });
+});
+
 app.post("/api/login", (req, res) => {
   // These values come from the JSON body sent by the React login form.
   const { username, password } = req.body;

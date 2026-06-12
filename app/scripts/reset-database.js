@@ -1,4 +1,5 @@
 const {
+  baselinePlants,
   baselineUsers,
   closeDatabase,
   DB_PATH,
@@ -16,6 +17,12 @@ async function main() {
 
     for (const user of baselineUsers) {
       console.log(`- ${user.username} / ${user.password} (${user.role})`);
+    }
+
+    console.log("Baseline plants:");
+
+    for (const plant of baselinePlants) {
+      console.log(`- ${plant.name} ($${plant.price})`);
     }
   } finally {
     await closeDatabase(db);

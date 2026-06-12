@@ -200,6 +200,42 @@ input {
   width: 260px;
 }
 
+.plant-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 440px;
+}
+
+.plant-image {
+  aspect-ratio: 4 / 3;
+  background: #dcefd4;
+  border-radius: 8px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.plant-meta {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 0;
+}
+
+.plant-meta div {
+  display: grid;
+  gap: 2px;
+}
+
+.plant-meta dt {
+  color: #61735e;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.plant-meta dd {
+  margin: 0;
+}
+
 .card span {
   display: inline-block;
   margin-top: 12px;

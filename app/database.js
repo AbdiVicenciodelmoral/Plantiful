@@ -32,6 +32,69 @@ const baselineUsers = [
   },
 ];
 
+const baselinePlants = [
+  {
+    name: "Monstera Deliciosa",
+    description: "Bold tropical leaves for bright indoor spaces.",
+    price: 24.99,
+    stock: 18,
+    care_level: "Moderate",
+    light: "Bright indirect light",
+    water: "Water weekly",
+    image_url: "/images/plants/monstera.svg",
+  },
+  {
+    name: "Snake Plant",
+    description: "Low-maintenance and perfect for beginners.",
+    price: 18.99,
+    stock: 32,
+    care_level: "Easy",
+    light: "Low to bright indirect light",
+    water: "Water every 2-3 weeks",
+    image_url: "/images/plants/snake-plant.svg",
+  },
+  {
+    name: "Pothos",
+    description: "A fast-growing trailing plant for shelves and desks.",
+    price: 14.99,
+    stock: 25,
+    care_level: "Easy",
+    light: "Low to medium indirect light",
+    water: "Water when soil feels dry",
+    image_url: "/images/plants/pothos.svg",
+  },
+  {
+    name: "Calathea Orbifolia",
+    description: "Round striped leaves that prefer steady humidity.",
+    price: 29.99,
+    stock: 10,
+    care_level: "Advanced",
+    light: "Medium indirect light",
+    water: "Keep soil lightly moist",
+    image_url: "/images/plants/calathea.svg",
+  },
+  {
+    name: "ZZ Plant",
+    description: "Glossy leaves and strong drought tolerance.",
+    price: 21.99,
+    stock: 20,
+    care_level: "Easy",
+    light: "Low to bright indirect light",
+    water: "Water every 2-3 weeks",
+    image_url: "/images/plants/zz-plant.svg",
+  },
+  {
+    name: "Fiddle Leaf Fig",
+    description: "A statement plant with tall stems and violin-shaped leaves.",
+    price: 44.99,
+    stock: 7,
+    care_level: "Moderate",
+    light: "Bright indirect light",
+    water: "Water when top soil is dry",
+    image_url: "/images/plants/fiddle-leaf-fig.svg",
+  },
+];
+
 function openDatabase() {
   return new sqlite3.Database(DB_PATH);
 }
@@ -72,6 +135,21 @@ async function createSchema(db) {
       role TEXT NOT NULL
     )
   `);
+
+  await run(db, `
+    CREATE TABLE IF NOT EXISTS plants (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE NOT NULL,
+      description TEXT NOT NULL,
+      price REAL NOT NULL,
+      stock INTEGER NOT NULL,
+      care_level TEXT NOT NULL,
+      light TEXT NOT NULL,
+      water TEXT NOT NULL,
+      image_url TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 }
 
 async function ensureEmailColumn(db) {
@@ -110,21 +188,81 @@ async function seedBaselineUsers(db) {
   }
 }
 
+async function seedBaselinePlants(db) {
+  for (const plant of baselinePlants) {
+    await run(
+      db,
+      `
+        INSERT OR IGNORE INTO plants (
+          name,
+          description,
+          price,
+          stock,
+          care_level,
+          light,
+          water,
+          image_url
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      [
+        plant.name,
+        plant.description,
+        plant.price,
+        plant.stock,
+        plant.care_level,
+        plant.light,
+        plant.water,
+        plant.image_url,
+      ]
+    );
+
+    await run(
+      db,
+      `
+        UPDATE plants
+        SET description = ?,
+            price = ?,
+            stock = ?,
+            care_level = ?,
+            light = ?,
+            water = ?,
+            image_url = ?
+        WHERE name = ?
+      `,
+      [
+        plant.description,
+        plant.price,
+        plant.stock,
+        plant.care_level,
+        plant.light,
+        plant.water,
+        plant.image_url,
+        plant.name,
+      ]
+    );
+  }
+}
+
 async function initializeDatabase(db) {
   await createSchema(db);
   await ensureEmailColumn(db);
   await seedBaselineUsers(db);
+  await seedBaselinePlants(db);
 }
 
 async function resetDatabase(db) {
   // This intentionally wipes all learner-created accounts and resets IDs.
+  await run(db, "DROP TABLE IF EXISTS plants");
   await run(db, "DROP TABLE IF EXISTS users");
   await createSchema(db);
   await seedBaselineUsers(db);
+  await seedBaselinePlants(db);
 }
 
 module.exports = {
   DB_PATH,
+  baselinePlants,
   baselineUsers,
   closeDatabase,
   initializeDatabase,

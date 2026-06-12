@@ -1,4 +1,42 @@
+import { useEffect, useState } from "react";
+import PlantCard from "../components/PlantCard.jsx";
+
 function Shop() {
+  const [plants, setPlants] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    loadPlants();
+  }, []);
+
+  async function loadPlants() {
+    const response = await fetch("/api/plants");
+    const data = await response.json();
+
+    if (!response.ok) {
+      setStatus(data.error || "Could not load plant inventory.");
+      return;
+    }
+
+    setPlants(data.plants || []);
+  }
+
+  async function handleSearch(event) {
+    event.preventDefault();
+    setStatus("");
+
+    const response = await fetch(`/api/plants/search?q=${encodeURIComponent(searchTerm)}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      setStatus(data.error || "Plant search failed.");
+      return;
+    }
+
+    setPlants(data.plants || []);
+  }
+
   return (
     <main className="page-shell">
       <section className="page-heading">
@@ -9,28 +47,24 @@ function Shop() {
         </p>
       </section>
 
-      <section className="toolbar-row">
-        <input type="text" placeholder="Search plants..." />
-        <button type="button">Search</button>
+      <form className="toolbar-row" onSubmit={handleSearch}>
+        <input
+          type="text"
+          placeholder="Search plants..."
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+        />
+        <button type="submit">Search</button>
+        <button type="button" onClick={loadPlants}>Reset</button>
         <button type="button">Filter care level</button>
-      </section>
+      </form>
+
+      {status && <p className="error">{status}</p>}
 
       <section className="cards">
-        <article className="card">
-          <h3>Plant Detail Page</h3>
-          <p>Future page for inventory data, reviews, image uploads, and IDOR tests.</p>
-          <span>/plants/:id</span>
-        </article>
-        <article className="card">
-          <h3>Favorites</h3>
-          <p>Future saved plants workflow tied to user ownership.</p>
-          <span>/favorites</span>
-        </article>
-        <article className="card">
-          <h3>Cart</h3>
-          <p>Future checkout workflow for price and quantity manipulation tests.</p>
-          <span>/cart</span>
-        </article>
+        {plants.map((plant) => (
+          <PlantCard plant={plant} key={plant.id} />
+        ))}
       </section>
     </main>
   );

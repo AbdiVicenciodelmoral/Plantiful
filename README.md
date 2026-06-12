@@ -207,6 +207,7 @@ npm run reset-db
 ```
 
 This removes learner-created accounts and restores the baseline demo accounts.
+It also restores the baseline plant inventory.
 
 The reset command uses `db/plantiful.db` by default. Advanced users can point it at another SQLite file with `PLANTIFUL_DB_PATH` when testing reset behavior.
 
@@ -217,6 +218,18 @@ admin / plantiful123
 student / learn123
 manager / inventory123
 victim / password123
+```
+
+Baseline plant images live in:
+
+```txt
+client/public/images/plants
+```
+
+The database stores image paths such as:
+
+```txt
+/images/plants/monstera.svg
 ```
 
 ## Working With Others
@@ -265,6 +278,7 @@ Plantiful/
     src/
       components/
         Navbar.jsx
+        PlantCard.jsx
       pages/
         Account.jsx
         AdminDashboard.jsx

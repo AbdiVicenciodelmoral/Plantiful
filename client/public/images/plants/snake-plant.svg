@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-label="Snake plant">
+  <rect width="640" height="480" fill="#e8f2df"/>
+  <rect x="260" y="340" width="120" height="70" rx="12" fill="#b9794a"/>
+  <path d="M275 350 C245 250 255 150 305 70 C335 165 325 270 300 350Z" fill="#2f6b3f"/>
+  <path d="M325 350 C310 245 330 145 385 55 C405 170 380 275 350 350Z" fill="#3d8a52"/>
+  <path d="M370 350 C365 250 400 175 455 105 C460 220 430 300 395 350Z" fill="#245832"/>
+  <path d="M300 105 L288 340 M365 95 L342 340 M430 145 L388 340" stroke="#bfdc99" stroke-width="8" opacity=".75"/>
+</svg>
