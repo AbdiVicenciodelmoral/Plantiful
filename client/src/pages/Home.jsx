@@ -67,6 +67,10 @@ function Home() {
   return (
     <>
       <section className="hero">
+        <div className="firefly" style={{ top: "18%", left: "72%", animationDelay: "0s" }}></div>
+        <div className="firefly magic" style={{ top: "55%", left: "88%", animationDelay: "1.3s" }}></div>
+        <div className="firefly" style={{ top: "78%", left: "60%", animationDelay: "2.6s" }}></div>
+        <div className="firefly magic" style={{ top: "35%", left: "50%", animationDelay: "0.8s" }}></div>
         <div>
           <h1>Bring Your Space to Life</h1>
           <p>Shop beautiful indoor plants, care tools, and beginner-friendly greenery.</p>

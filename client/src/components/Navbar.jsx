@@ -2,7 +2,8 @@ function Navbar({ user, onLogin, onLogout, onNavigate }) {
   return (
     <nav className="navbar">
       <button className="logo" type="button" onClick={() => onNavigate("home")}>
-        Plantiful
+          <img src="../../assets/wolfsbane2.png" alt="Plantiful logo" width="22" height="22" />
+          Plantiful
       </button>
 
       <div className="nav-links">
