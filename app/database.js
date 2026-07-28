@@ -95,6 +95,27 @@ const baselinePlants = [
   },
 ];
 
+const baselineReviews = [
+  {
+    id: 1,
+    plant_name: "Monstera Deliciosa",
+    display_name: "student",
+    title: "Big leaves, easy win",
+    body: "My monstera arrived healthy and made my room feel less empty.",
+    rating: 5,
+    username: "student",
+  },
+  {
+    id: 2,
+    plant_name: "Snake Plant",
+    display_name: "victim",
+    title: "Survived my apartment",
+    body: "I forgot to water it twice and it still looks good.",
+    rating: 4,
+    username: "victim",
+  },
+];
+
 function openDatabase() {
   return new sqlite3.Database(DB_PATH);
 }
@@ -148,6 +169,21 @@ async function createSchema(db) {
       water TEXT NOT NULL,
       image_url TEXT NOT NULL,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await run(db, `
+    CREATE TABLE IF NOT EXISTS reviews (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      plant_name TEXT NOT NULL,
+      display_name TEXT NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT NOT NULL,
+      rating INTEGER NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
 }
@@ -244,25 +280,67 @@ async function seedBaselinePlants(db) {
   }
 }
 
+async function seedBaselineReviews(db) {
+  for (const review of baselineReviews) {
+    await run(
+      db,
+      `
+        INSERT OR IGNORE INTO reviews (
+          id,
+          user_id,
+          plant_name,
+          display_name,
+          title,
+          body,
+          rating
+        )
+        SELECT
+          ?,
+          users.id,
+          ?,
+          ?,
+          ?,
+          ?,
+          ?
+        FROM users
+        WHERE users.username = ?
+      `,
+      [
+        review.id,
+        review.plant_name,
+        review.display_name,
+        review.title,
+        review.body,
+        review.rating,
+        review.username,
+      ]
+    );
+  }
+}
+
 async function initializeDatabase(db) {
   await createSchema(db);
   await ensureEmailColumn(db);
   await seedBaselineUsers(db);
   await seedBaselinePlants(db);
+  await seedBaselineReviews(db);
 }
 
 async function resetDatabase(db) {
   // This intentionally wipes all learner-created accounts and resets IDs.
+  await run(db, "DROP TABLE IF EXISTS reviews");
   await run(db, "DROP TABLE IF EXISTS plants");
   await run(db, "DROP TABLE IF EXISTS users");
   await createSchema(db);
   await seedBaselineUsers(db);
   await seedBaselinePlants(db);
+  await seedBaselineReviews(db);
 }
 
 module.exports = {
   DB_PATH,
   baselinePlants,
+  baselineReviews,
   baselineUsers,
   closeDatabase,
   initializeDatabase,

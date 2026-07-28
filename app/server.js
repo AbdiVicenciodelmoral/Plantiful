@@ -164,6 +164,132 @@ app.get("/api/plants/search", (req, res) => {
   });
 });
 
+app.get("/api/reviews", (req, res) => {
+  db.all(
+    `
+      SELECT
+        reviews.id,
+        reviews.user_id,
+        reviews.plant_name,
+        reviews.display_name,
+        reviews.title,
+        reviews.body,
+        reviews.rating,
+        reviews.created_at,
+        reviews.updated_at,
+        users.username AS account_username
+      FROM reviews
+      JOIN users ON users.id = reviews.user_id
+      ORDER BY reviews.updated_at DESC, reviews.id DESC
+    `,
+    (err, reviews) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading reviews.",
+        });
+      }
+
+      res.json({
+        reviews,
+      });
+    }
+  );
+});
+
+app.post("/api/reviews", requireLogin, (req, res) => {
+  const {
+    plantName = "",
+    displayName = "",
+    title = "",
+    body = "",
+    rating = 5,
+  } = req.body;
+
+  if (!plantName || !displayName || !title || !body) {
+    return res.status(400).json({
+      error: "Plant, display name, title, and review are required.",
+    });
+  }
+
+  // Intentionally vulnerable training note:
+  // This stores displayName, title, and body exactly as submitted. That becomes
+  // stored XSS because the React reviews page intentionally renders those
+  // stored fields as raw HTML.
+  db.run(
+    `
+      INSERT INTO reviews (user_id, plant_name, display_name, title, body, rating)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `,
+    [req.user.id, plantName, displayName, title, body, Number(rating)],
+    function handleInsert(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while saving review.",
+        });
+      }
+
+      res.status(201).json({
+        message: "Review saved.",
+        reviewId: this.lastID,
+      });
+    }
+  );
+});
+
+app.put("/api/reviews/:id", requireLogin, (req, res) => {
+  const { id } = req.params;
+  const {
+    plantName = "",
+    displayName = "",
+    title = "",
+    body = "",
+    rating = 5,
+  } = req.body;
+
+  if (!plantName || !displayName || !title || !body) {
+    return res.status(400).json({
+      error: "Plant, display name, title, and review are required.",
+    });
+  }
+
+  // Intentionally vulnerable for the training playground:
+  // This update trusts the review id from the URL and only checks that the
+  // requester is logged in. It does NOT check:
+  // WHERE id = ? AND user_id = ?
+  // Any logged-in user can edit another user's review if they discover or
+  // guess the review id. That is the IDOR lesson.
+  db.run(
+    `
+      UPDATE reviews
+      SET plant_name = ?,
+          display_name = ?,
+          title = ?,
+          body = ?,
+          rating = ?,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `,
+    [plantName, displayName, title, body, Number(rating), id],
+    function handleUpdate(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while updating review.",
+        });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: `No review found with id ${id}.`,
+        });
+      }
+
+      res.json({
+        message: "Review updated.",
+      });
+    }
+  );
+});
+
 app.post("/api/login", (req, res) => {
   // These values come from the JSON body sent by the React login form.
   const { username, password } = req.body;

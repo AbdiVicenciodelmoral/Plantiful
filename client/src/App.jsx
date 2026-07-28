@@ -12,6 +12,7 @@ import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import Register from "./pages/Register.jsx";
 import Reviews from "./pages/Reviews.jsx";
 import Shop from "./pages/Shop.jsx";
+import WorkshopPotting from "./pages/WorkshopPotting.jsx";
 import Workshops from "./pages/Workshops.jsx";
 
 const pathToScreen = {
@@ -36,6 +37,7 @@ const pathToScreen = {
   "/register": "register",
   "/reviews": "reviews",
   "/shop": "shop",
+  "/workshops/potting-like-a-master": "workshopPotting",
   "/workshops": "workshops",
 };
 
@@ -73,6 +75,12 @@ function App() {
     return screen;
   }, [screen, user]);
 
+  useEffect(() => {
+    if (!loadingUser && activeScreen === "workshopPotting" && !user) {
+      requireLogin("Please log in or create an account before registering for a class.");
+    }
+  }, [activeScreen, loadingUser, user]);
+
   function navigate(nextScreen) {
     setScreen(nextScreen);
   }
@@ -90,6 +98,11 @@ function App() {
   function showLoginHelp() {
     setLoginNotice("");
     setScreen("loginHelp");
+  }
+
+  function requireLogin(message) {
+    setLoginNotice(message);
+    setScreen("login");
   }
 
   async function handleLogout() {
@@ -216,9 +229,25 @@ function App() {
               onRegisterSuccess={handleRegisterSuccess}
             />
           )}
-          {activeScreen === "reviews" && <Reviews />}
+          {activeScreen === "reviews" && (
+            <Reviews
+              user={user}
+              onRequireLogin={() =>
+                requireLogin("Please log in or create an account before writing a review.")
+              }
+            />
+          )}
           {activeScreen === "shop" && <Shop />}
-          {activeScreen === "workshops" && <Workshops />}
+          {activeScreen === "workshopPotting" && (
+            <WorkshopPotting user={user} onNavigate={navigate} />
+          )}
+          {activeScreen === "workshops" && (
+            <Workshops
+              user={user}
+              onNavigate={navigate}
+              onRequireLogin={requireLogin}
+            />
+          )}
           {activeScreen === "dashboard" && <Dashboard user={user} />}
         </>
       )}
