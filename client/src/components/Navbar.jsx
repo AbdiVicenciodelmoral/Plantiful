@@ -1,4 +1,4 @@
-function Navbar({ user, onLogin, onLogout, onNavigate }) {
+﻿function Navbar({ user, onLogin, onLogout, onNavigate }) {
   return (
     <nav className="navbar">
       <button className="logo" type="button" onClick={() => onNavigate("home")}>
@@ -14,7 +14,7 @@ function Navbar({ user, onLogin, onLogout, onNavigate }) {
           Shop
         </button>
         <button type="button" onClick={() => onNavigate("careGuides")}>
-          Care Guides
+          Knowledge Center
         </button>
         <button type="button" onClick={() => onNavigate("workshops")}>
           Workshops
@@ -51,3 +51,4 @@ function Navbar({ user, onLogin, onLogout, onNavigate }) {
 }
 
 export default Navbar;
+

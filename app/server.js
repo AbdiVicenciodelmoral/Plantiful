@@ -1,4 +1,5 @@
-const express = require("express");
+﻿const express = require("express");
+const fs = require("fs");
 const path = require("path");
 const {
   DB_PATH,
@@ -9,9 +10,68 @@ const {
 const app = express();
 const PORT = 3000;
 const CLIENT_DIST_PATH = path.join(__dirname, "..", "client", "dist");
+const DOCUMENTS_ROOT = path.join(__dirname, "..", "documents");
 
 // Open a connection to the SQLite database file.
 // If the file does not exist yet, sqlite3 creates it automatically.
+
+const documentRecords = [
+  {
+    id: 31,
+    name: "Plantiful Monstera Care Guide",
+    filename: "plantiful_monstera_care_guide.pdf",
+    file: "public/plantiful_monstera_care_guide.pdf",
+    type: "PDF",
+    category: "Care Guides",
+    author: "Plantiful Education",
+    uploaded: "2026-08-08",
+    visibility: "public",
+  },
+  {
+    id: 32,
+    name: "Spring Watering Schedule",
+    filename: "spring-watering-schedule.txt",
+    file: "public/spring-watering-schedule.txt",
+    type: "Text",
+    category: "Seasonal Reports",
+    author: "Greenhouse Team",
+    uploaded: "2026-08-02",
+    visibility: "public",
+  },
+  {
+    id: 33,
+    name: "Pest Identification Guide",
+    filename: "pest-identification-guide.txt",
+    file: "public/pest-identification-guide.txt",
+    type: "Text",
+    category: "Care Guides",
+    author: "Plantiful Support",
+    uploaded: "2026-07-27",
+    visibility: "public",
+  },
+  {
+    id: 34,
+    name: "Workshop Notes",
+    filename: "workshop-notes.md",
+    file: "workshops/workshop-notes.md",
+    type: "Markdown",
+    category: "Workshop Material",
+    author: "Workshop Staff",
+    uploaded: "2026-07-21",
+    visibility: "public",
+  },
+  {
+    id: 41,
+    name: "Deployment Notes",
+    filename: "deployment-notes.txt",
+    file: "internal/deployment-notes.txt",
+    type: "Text",
+    category: "Staff Reference",
+    author: "Internal IT",
+    uploaded: "2026-07-18",
+    visibility: "staff",
+  },
+];
 const db = openDatabase();
 
 initializeDatabase(db).then(() => {
@@ -22,6 +82,44 @@ initializeDatabase(db).then(() => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Intentionally vulnerable for the training playground:
+// The shop page loads product images through:
+// /loadImage?filename=calathea.svg
+//
+// Vulnerability:
+// The filename value is joined directly to the image folder path. Because there
+// is no validation, learners can use ../ or ..\ to move out of the image folder
+// and read other files from the server's filesystem.
+//
+// Windows-style lab payload:
+// /loadImage?filename=..\..\..\..\windows\win.ini
+//
+// URL-encoded version:
+// /loadImage?filename=..%5c..%5c..%5c..%5cwindows%5cwin.ini
+//
+// Remediation point:
+// Use an allowlist of image filenames, reject path separators, and verify that
+// the resolved path still starts inside the intended image directory.
+app.get("/loadImage", (req, res) => {
+  const filename = req.query.filename || "";
+  const imageDirectory = path.join(__dirname, "..", "client", "public", "images", "plants");
+  const requestedPath = path.join(imageDirectory, filename);
+
+  fs.readFile(requestedPath, (err, fileContents) => {
+    if (err) {
+      return res.status(404).send("Image not found.");
+    }
+
+    if (requestedPath.endsWith(".svg")) {
+      res.type("image/svg+xml");
+    } else {
+      res.type("text/plain");
+    }
+
+    res.send(fileContents);
+  });
+});
 
 // Converts the browser's Cookie header into an object we can read.
 // Example:
@@ -110,6 +208,97 @@ app.get("/api/dashboard", requireLogin, (req, res) => {
   });
 });
 
+
+function sendDocumentFile(req, res, mode) {
+  const requestedFile = req.query.file || "";
+
+  // Intentionally vulnerable for the training playground:
+  // The user-controlled file parameter is joined directly to DOCUMENTS_ROOT.
+  // This enables path traversal such as:
+  // /documents/download?file=../windows/win.ini
+  //
+  // Remediation point:
+  // Resolve the target path, verify it stays inside DOCUMENTS_ROOT, and prefer
+  // download-by-id instead of exposing raw filenames.
+  const requestedPath = path.join(DOCUMENTS_ROOT, requestedFile);
+
+  fs.readFile(requestedPath, (err, fileContents) => {
+    if (err) {
+      return res.status(404).send(mode === "preview" ? "Preview not available." : "Document not found.");
+    }
+
+    const extension = path.extname(requestedPath).toLowerCase();
+
+    if (extension === ".pdf") {
+      res.type("application/pdf");
+    } else if (extension === ".md") {
+      res.type("text/markdown");
+    } else {
+      res.type("text/plain");
+    }
+
+    res.send(fileContents);
+  });
+}
+
+app.get("/api/documents", (req, res) => {
+  const publicDocuments = documentRecords.filter((document) => {
+    return document.visibility === "public";
+  });
+
+  res.json({
+    documents: publicDocuments,
+  });
+});
+
+app.get("/api/documents/search", (req, res) => {
+  const q = req.query.q || "";
+  const lowerQuery = q.toLowerCase();
+
+  const documents = documentRecords.filter((document) => {
+    return (
+      document.visibility === "public" &&
+      (
+        document.name.toLowerCase().includes(lowerQuery) ||
+        document.category.toLowerCase().includes(lowerQuery) ||
+        document.filename.toLowerCase().includes(lowerQuery)
+      )
+    );
+  });
+
+  res.json({
+    query: q,
+    documents,
+  });
+});
+
+app.get("/api/documents/:id", (req, res) => {
+  const document = documentRecords.find((record) => {
+    return String(record.id) === String(req.params.id);
+  });
+
+  if (!document) {
+    return res.status(404).json({
+      error: "Document not found.",
+    });
+  }
+
+  // Intentionally vulnerable future lesson:
+  // This route exposes staff metadata by ID if the learner guesses / changes
+  // the document id. A secure app would check authorization before returning
+  // non-public records.
+  res.json({
+    document,
+  });
+});
+
+app.get("/documents/download", (req, res) => {
+  sendDocumentFile(req, res, "download");
+});
+
+app.get("/documents/preview", (req, res) => {
+  sendDocumentFile(req, res, "preview");
+});
 app.get("/api/plants", (req, res) => {
   db.all(
     `
@@ -462,3 +651,5 @@ app.get(/^\/(?!api).*/, (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+

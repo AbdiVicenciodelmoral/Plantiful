@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+﻿import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
@@ -7,6 +7,10 @@ export default defineConfig({
     host: "127.0.0.1",
     proxy: {
       "/api": "http://127.0.0.1:3000",
+      "/loadImage": "http://127.0.0.1:3000",
+      "/documents": "http://127.0.0.1:3000",
     },
   },
 });
+
+

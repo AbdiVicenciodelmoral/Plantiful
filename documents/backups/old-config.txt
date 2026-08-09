@@ -1,0 +1,5 @@
+﻿Old Plantiful Config Backup
+
+debug=true
+documentRoot=D:\Plantiful\documents
+legacyUploadRole=staff

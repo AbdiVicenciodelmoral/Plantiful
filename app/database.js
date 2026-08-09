@@ -1,4 +1,4 @@
-const path = require("path");
+﻿const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
 
 const DB_PATH = process.env.PLANTIFUL_DB_PATH || path.join(__dirname, "..", "db", "plantiful.db");
@@ -41,7 +41,7 @@ const baselinePlants = [
     care_level: "Moderate",
     light: "Bright indirect light",
     water: "Water weekly",
-    image_url: "/images/plants/monstera.svg",
+    image_url: "/loadImage?filename=monstera.svg",
   },
   {
     name: "Snake Plant",
@@ -51,7 +51,7 @@ const baselinePlants = [
     care_level: "Easy",
     light: "Low to bright indirect light",
     water: "Water every 2-3 weeks",
-    image_url: "/images/plants/snake-plant.svg",
+    image_url: "/loadImage?filename=snake-plant.svg",
   },
   {
     name: "Pothos",
@@ -61,7 +61,7 @@ const baselinePlants = [
     care_level: "Easy",
     light: "Low to medium indirect light",
     water: "Water when soil feels dry",
-    image_url: "/images/plants/pothos.svg",
+    image_url: "/loadImage?filename=pothos.svg",
   },
   {
     name: "Calathea Orbifolia",
@@ -71,7 +71,7 @@ const baselinePlants = [
     care_level: "Advanced",
     light: "Medium indirect light",
     water: "Keep soil lightly moist",
-    image_url: "/images/plants/calathea.svg",
+    image_url: "/loadImage?filename=calathea.svg",
   },
   {
     name: "ZZ Plant",
@@ -81,7 +81,7 @@ const baselinePlants = [
     care_level: "Easy",
     light: "Low to bright indirect light",
     water: "Water every 2-3 weeks",
-    image_url: "/images/plants/zz-plant.svg",
+    image_url: "/loadImage?filename=zz-plant.svg",
   },
   {
     name: "Fiddle Leaf Fig",
@@ -91,7 +91,7 @@ const baselinePlants = [
     care_level: "Moderate",
     light: "Bright indirect light",
     water: "Water when top soil is dry",
-    image_url: "/images/plants/fiddle-leaf-fig.svg",
+    image_url: "/loadImage?filename=fiddle-leaf-fig.svg",
   },
 ];
 
@@ -347,3 +347,4 @@ module.exports = {
   openDatabase,
   resetDatabase,
 };
+

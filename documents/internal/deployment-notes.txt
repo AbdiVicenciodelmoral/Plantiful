@@ -1,0 +1,6 @@
+﻿Internal Deployment Notes
+
+Legacy admin portal still responds at /staff-console-old.
+Remove before production launch.
+
+Document service archive API prototype: /api/v1/archive
