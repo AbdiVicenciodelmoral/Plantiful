@@ -1294,3 +1294,1144 @@ h1, h2, h3 {
     min-width: 100%;
   }
 }
+
+/* Plantiful homepage redesign v1 */
+.home-hero {
+  align-items: center;
+  display: grid;
+  gap: 48px;
+  grid-template-columns: minmax(320px, 0.95fr) minmax(320px, 1.05fr);
+  min-height: 640px;
+  overflow: hidden;
+  padding: 130px 64px 72px;
+  position: relative;
+}
+
+.home-hero-copy {
+  max-width: 680px;
+  position: relative;
+  z-index: 1;
+}
+
+.home-hero h1 {
+  color: var(--color-ink);
+  font-size: clamp(44px, 6vw, 76px);
+  line-height: 1.02;
+  margin-bottom: 20px;
+  max-width: 12ch;
+  text-shadow: 0 0 30px rgba(124, 255, 160, 0.35), 0 0 60px rgba(124, 255, 160, 0.12);
+}
+
+.home-hero p {
+  color: var(--color-ink-soft);
+  font-size: 20px;
+  line-height: 1.55;
+  max-width: 46ch;
+}
+
+.home-hero-actions,
+.spotlight-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.home-hero-actions a,
+.spotlight-actions a,
+.home-center-link,
+.newsletter-panel button,
+.global-search button,
+.explore-card button {
+  background: var(--color-vine);
+  border: none;
+  border-radius: 999px;
+  color: #06120a;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 700;
+  padding: 12px 18px;
+  text-decoration: none;
+}
+
+.home-hero-actions a:nth-child(2),
+.spotlight-actions a:nth-child(2) {
+  background: transparent;
+  border: 1px solid var(--color-line);
+  color: var(--color-glow);
+}
+
+.hero-plant-stage {
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(124, 255, 160, 0.22), transparent 34%),
+    radial-gradient(circle at 68% 60%, rgba(196, 140, 255, 0.16), transparent 30%),
+    var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 28px;
+  box-shadow: var(--shadow-tag), var(--glow-soft);
+  min-height: 380px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-plant-orb {
+  background: linear-gradient(145deg, #5cb56e, #24683a);
+  border-radius: 55% 45% 52% 48%;
+  opacity: 0.88;
+  position: absolute;
+}
+
+.hero-plant-orb-left {
+  height: 45%;
+  left: 18%;
+  top: 24%;
+  transform: rotate(-20deg);
+  width: 33%;
+}
+
+.hero-plant-orb-center {
+  height: 58%;
+  left: 34%;
+  top: 14%;
+  width: 34%;
+}
+
+.hero-plant-orb-right {
+  height: 48%;
+  right: 16%;
+  top: 25%;
+  transform: rotate(18deg);
+  width: 33%;
+}
+
+.hero-plant-stem {
+  background: rgba(232, 243, 228, 0.55);
+  bottom: 28%;
+  position: absolute;
+  transform-origin: bottom center;
+  width: 12px;
+}
+
+.hero-plant-stem-one {
+  height: 48%;
+  left: 44%;
+  transform: rotate(-22deg);
+}
+
+.hero-plant-stem-two {
+  height: 58%;
+  left: 50%;
+}
+
+.hero-plant-stem-three {
+  height: 48%;
+  right: 43%;
+  transform: rotate(24deg);
+}
+
+.hero-plant-pot {
+  background: #b97848;
+  border-radius: 14px 14px 28px 28px;
+  bottom: 10%;
+  height: 22%;
+  left: 36%;
+  position: absolute;
+  width: 28%;
+}
+
+.global-search-panel,
+.home-section,
+.home-footer {
+  padding: 56px 64px;
+}
+
+.global-search-panel {
+  background: var(--color-bg-alt);
+  border-bottom: 1px solid var(--color-line);
+  border-top: 1px solid var(--color-line);
+}
+
+.global-search {
+  display: flex;
+  gap: 0;
+  margin: 0 auto;
+  max-width: 920px;
+}
+
+.global-search input,
+.newsletter-panel input {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+  flex: 1;
+  min-width: 0;
+  padding: 16px 18px;
+}
+
+.global-search input {
+  border-radius: 999px 0 0 999px;
+}
+
+.global-search button {
+  border-radius: 0 999px 999px 0;
+}
+
+.home-section-heading {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.home-section-heading h2,
+.care-spotlight h2,
+.newsletter-panel h2 {
+  font-size: clamp(30px, 4vw, 46px);
+}
+
+.explore-grid,
+.workshop-preview-grid,
+.testimonial-grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 auto;
+  max-width: 1120px;
+}
+
+.explore-card,
+.workshop-preview-grid article,
+.testimonial-grid article,
+.newsletter-panel {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-tag);
+}
+
+.explore-card {
+  min-height: 260px;
+  padding: 28px;
+  position: relative;
+}
+
+.explore-card::before {
+  background: var(--vine-corner);
+  background-size: contain;
+  content: "";
+  height: 58px;
+  left: -14px;
+  position: absolute;
+  top: -14px;
+  width: 58px;
+}
+
+.explore-card p {
+  color: var(--color-magic);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.explore-card h3 {
+  font-size: 28px;
+  margin: 30px 0 12px;
+}
+
+.explore-card span {
+  color: var(--color-ink-soft);
+  display: block;
+  line-height: 1.5;
+  min-height: 48px;
+}
+
+.explore-card button {
+  margin-top: 24px;
+}
+
+.home-featured-grid {
+  justify-content: center;
+}
+
+.home-center-link {
+  margin: 34px auto 0;
+  width: fit-content;
+}
+
+.care-spotlight {
+  align-items: center;
+  background: var(--color-bg-alt);
+  border-bottom: 1px solid var(--color-line);
+  border-top: 1px solid var(--color-line);
+  display: grid;
+  gap: 42px;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+}
+
+.care-spotlight p {
+  color: var(--color-ink-soft);
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 62ch;
+}
+
+.care-spotlight-art {
+  aspect-ratio: 4 / 3;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 24px;
+  box-shadow: var(--shadow-tag), var(--glow-soft);
+  overflow: hidden;
+  position: relative;
+}
+
+.spotlight-leaf {
+  background: linear-gradient(145deg, #5cb56e, #2e7440);
+  border-radius: 58% 42% 54% 46%;
+  position: absolute;
+}
+
+.spotlight-leaf-one {
+  height: 62%;
+  left: 16%;
+  top: 20%;
+  transform: rotate(-28deg);
+  width: 34%;
+}
+
+.spotlight-leaf-two {
+  height: 76%;
+  left: 36%;
+  top: 10%;
+  width: 34%;
+}
+
+.spotlight-leaf-three {
+  height: 60%;
+  right: 15%;
+  top: 22%;
+  transform: rotate(28deg);
+  width: 34%;
+}
+
+.spotlight-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.spotlight-facts span {
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  color: var(--color-glow);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 8px 10px;
+  text-transform: uppercase;
+}
+
+.workshop-preview-grid article,
+.testimonial-grid article {
+  padding: 24px;
+}
+
+.workshop-preview-grid h3 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.workshop-preview-grid p,
+.testimonial-grid blockquote,
+.testimonial-grid span {
+  color: var(--color-ink-soft);
+}
+
+.workshop-preview-grid span {
+  color: var(--color-glow);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.stars {
+  color: var(--color-glow);
+  letter-spacing: 0.08em;
+}
+
+.testimonial-grid blockquote {
+  line-height: 1.6;
+  margin: 14px 0 20px;
+}
+
+.testimonial-grid strong,
+.testimonial-grid span {
+  display: block;
+}
+
+.newsletter-panel {
+  margin: 0 auto 48px;
+  max-width: 920px;
+  text-align: center;
+}
+
+.newsletter-panel form {
+  display: flex;
+  gap: 12px;
+  margin: 28px auto 0;
+  max-width: 620px;
+}
+
+.newsletter-panel input {
+  border-radius: 999px;
+}
+
+.home-footer {
+  border-top: 1px solid var(--color-line);
+  color: var(--color-ink-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.home-footer strong {
+  color: var(--color-glow);
+  font-family: var(--font-display);
+  font-size: 24px;
+}
+
+.home-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.home-footer a {
+  color: var(--color-ink-soft);
+  text-decoration: none;
+}
+
+@media (max-width: 900px) {
+  .home-hero,
+  .care-spotlight {
+    grid-template-columns: 1fr;
+  }
+
+  .explore-grid,
+  .workshop-preview-grid,
+  .testimonial-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .home-hero,
+  .global-search-panel,
+  .home-section,
+  .home-footer {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .home-hero {
+    padding-top: 96px;
+  }
+
+  .global-search,
+  .newsletter-panel form {
+    flex-direction: column;
+  }
+
+  .global-search input,
+  .global-search button {
+    border-radius: 999px;
+  }
+}
+
+/* ---------- Plantiful product detail page v1 ---------- */
+.plant-card-link {
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+}
+
+.plant-card-action {
+  color: var(--color-vine);
+  display: inline-block;
+  font-size: 0.82rem;
+  margin-top: 0.95rem;
+  text-transform: uppercase;
+}
+
+.product-detail-page {
+  padding-top: 3rem;
+}
+
+.text-link-button {
+  background: transparent;
+  border: 0;
+  color: var(--color-vine);
+  cursor: pointer;
+  font: inherit;
+  margin-bottom: 1.5rem;
+  padding: 0;
+}
+
+.product-detail {
+  align-items: stretch;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+}
+
+.product-image-panel,
+.product-info-panel {
+  background: rgba(20, 36, 25, 0.88);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+}
+
+.product-image-panel {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 440px;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.product-image-panel img {
+  background: #e8f3dc;
+  border-radius: 14px;
+  max-height: 390px;
+  max-width: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.product-info-panel {
+  padding: 2rem;
+}
+
+.product-info-panel h1 {
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  margin: 0 0 1rem;
+}
+
+.product-info-panel > p {
+  color: var(--color-ink-soft);
+  font-size: 1.1rem;
+  max-width: 680px;
+}
+
+.product-price {
+  color: var(--color-vine) !important;
+  font-size: 2rem !important;
+  font-weight: 800;
+  margin: 1.5rem 0;
+}
+
+.product-detail-list {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1.5rem 0;
+}
+
+.product-detail-list div {
+  border-bottom: 1px solid rgba(197, 232, 181, 0.18);
+  padding-bottom: 0.8rem;
+}
+
+.product-detail-list dt {
+  color: var(--color-vine);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.product-detail-list dd {
+  color: var(--color-ink);
+  margin: 0.2rem 0 0;
+}
+
+.product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin: 1.7rem 0 1rem;
+}
+
+.product-actions button {
+  background: var(--color-button);
+  border: 1px solid rgba(197, 232, 181, 0.35);
+  border-radius: 10px;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.95rem 1.3rem;
+}
+
+.product-actions .secondary-action {
+  background: rgba(197, 232, 181, 0.1);
+}
+
+.success {
+  color: var(--color-vine);
+  font-weight: 700;
+}
+
+.training-note {
+  background: rgba(148, 91, 216, 0.1);
+  border: 1px solid rgba(174, 119, 238, 0.35);
+  border-radius: 12px;
+  color: var(--color-ink-soft);
+  margin-top: 1.5rem;
+  padding: 1rem;
+}
+
+@media (max-width: 800px) {
+  .product-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .product-image-panel {
+    min-height: 280px;
+  }
+
+  .product-detail-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Plantiful checkout flow v1 ---------- */
+.checkout-page {
+  padding-top: 3rem;
+}
+
+.checkout-grid {
+  align-items: start;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+}
+
+.checkout-panel,
+.checkout-summary,
+.confirmation-panel {
+  background: rgba(20, 36, 25, 0.9);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+  padding: 1.4rem;
+}
+
+.cart-row {
+  align-items: center;
+  border-bottom: 1px solid rgba(197, 232, 181, 0.16);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  padding: 1rem 0;
+}
+
+.cart-row:first-child {
+  padding-top: 0;
+}
+
+.cart-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.cart-row img {
+  background: #e8f3dc;
+  border-radius: 12px;
+  height: 100px;
+  object-fit: contain;
+  width: 120px;
+}
+
+.cart-row h2,
+.checkout-panel h2,
+.checkout-summary h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.55rem;
+}
+
+.cart-row label,
+.checkout-form label {
+  color: var(--color-ink-soft);
+  display: grid;
+  font-weight: 700;
+  gap: 0.4rem;
+}
+
+.cart-row input,
+.checkout-form input,
+.checkout-form textarea {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(197, 232, 181, 0.3);
+  border-radius: 10px;
+  color: var(--color-ink);
+  font: inherit;
+  padding: 0.8rem;
+}
+
+.cart-row input {
+  max-width: 90px;
+}
+
+.cart-row-actions {
+  align-items: end;
+  display: grid;
+  gap: 0.7rem;
+  justify-items: end;
+}
+
+.checkout-summary {
+  position: sticky;
+  top: 1rem;
+}
+
+.checkout-summary p,
+.review-order-row {
+  align-items: center;
+  border-bottom: 1px solid rgba(197, 232, 181, 0.14);
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0.8rem 0;
+}
+
+.checkout-total {
+  color: var(--color-vine);
+  font-size: 1.2rem;
+}
+
+.checkout-summary button,
+.checkout-panel button,
+.confirmation-panel button,
+.checkout-actions button,
+.cart-row-actions button {
+  background: var(--color-button);
+  border: 1px solid rgba(197, 232, 181, 0.35);
+  border-radius: 10px;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.85rem 1rem;
+}
+
+.checkout-summary button {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.checkout-summary .secondary-action {
+  background: rgba(197, 232, 181, 0.1);
+}
+
+.checkout-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 760px;
+}
+
+.checkout-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.checkout-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+.confirmation-panel {
+  max-width: 760px;
+}
+
+.confirmation-panel h1 {
+  margin-top: 0;
+}
+
+@media (max-width: 850px) {
+  .checkout-grid,
+  .cart-row,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-summary {
+    position: static;
+  }
+
+  .cart-row-actions {
+    justify-items: start;
+  }
+}
+
+/* ---------- Plantiful cart UX improvements v1 ---------- */
+.cart-nav-button {
+  align-items: center;
+  display: inline-flex !important;
+  gap: 0.45rem;
+}
+
+.cart-nav-button span {
+  align-items: center;
+  background: var(--color-magic);
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 1.45rem;
+  min-width: 1.45rem;
+  padding: 0 0.35rem;
+}
+
+.cart-feedback {
+  background: rgba(197, 232, 181, 0.08);
+  border: 1px solid rgba(197, 232, 181, 0.24);
+  border-radius: 12px;
+  display: grid;
+  gap: 0.85rem;
+  margin: 1rem 0;
+  padding: 1rem;
+}
+
+.cart-feedback p {
+  margin: 0;
+}
+
+.cart-feedback div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.cart-feedback button {
+  background: rgba(197, 232, 181, 0.12);
+  border: 1px solid rgba(197, 232, 181, 0.35);
+  border-radius: 10px;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.75rem 1rem;
+}
+
+/* ---------- Plantiful order history fix v1 ---------- */
+.order-history-page {
+  padding-top: 3rem;
+}
+
+.order-history-list {
+  background: rgba(20, 36, 25, 0.9);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.order-history-row {
+  align-items: center;
+  border-bottom: 1px solid rgba(197, 232, 181, 0.16);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 1.2rem;
+}
+
+.order-history-row:last-child {
+  border-bottom: 0;
+}
+
+.order-history-row h2 {
+  font-size: 1.25rem;
+  margin: 0.25rem 0;
+  text-transform: capitalize;
+}
+
+.order-history-row p {
+  color: var(--color-ink-soft);
+  margin: 0.25rem 0;
+}
+
+.order-history-meta {
+  align-items: end;
+  display: grid;
+  gap: 0.55rem;
+  justify-items: end;
+}
+
+.order-history-meta strong {
+  color: var(--color-vine);
+  font-size: 1.3rem;
+}
+
+.order-history-meta span {
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+}
+
+.order-history-meta button {
+  background: var(--color-button);
+  border: 1px solid rgba(197, 232, 181, 0.35);
+  border-radius: 10px;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.75rem 1rem;
+}
+
+@media (max-width: 720px) {
+  .order-history-row {
+    grid-template-columns: 1fr;
+  }
+
+  .order-history-meta {
+    justify-items: start;
+  }
+}
+
+/* ---------- Plantiful wishlist page v1 ---------- */
+.wishlist-page {
+  padding-top: 3rem;
+}
+
+.wishlist-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.wishlist-card {
+  align-items: center;
+  background: rgba(20, 36, 25, 0.9);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: 150px minmax(0, 1fr) auto;
+  padding: 1.2rem;
+}
+
+.wishlist-card img {
+  background: #e8f3dc;
+  border-radius: 12px;
+  height: 130px;
+  object-fit: contain;
+  width: 150px;
+}
+
+.wishlist-card h2 {
+  font-size: 1.4rem;
+  margin: 0.2rem 0 0.4rem;
+}
+
+.wishlist-card p {
+  color: var(--color-ink-soft);
+}
+
+.wishlist-card strong {
+  color: var(--color-vine);
+  display: inline-block;
+  margin-top: 0.8rem;
+}
+
+.wishlist-actions {
+  display: grid;
+  gap: 0.7rem;
+  min-width: 150px;
+}
+
+.wishlist-actions button {
+  background: var(--color-button);
+  border: 1px solid rgba(197, 232, 181, 0.35);
+  border-radius: 10px;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.75rem 1rem;
+}
+
+.wishlist-actions .secondary-action {
+  background: rgba(197, 232, 181, 0.1);
+}
+
+@media (max-width: 820px) {
+  .wishlist-card {
+    grid-template-columns: 1fr;
+  }
+
+  .wishlist-card img {
+    width: 100%;
+  }
+
+  .wishlist-actions {
+    min-width: 0;
+  }
+}
+
+/* ---------- Plantiful my workshops page v1 ---------- */
+.my-workshops-page {
+  padding-top: 3rem;
+}
+
+.my-workshops-list {
+  background: rgba(20, 36, 25, 0.9);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.my-workshop-row {
+  align-items: center;
+  border-bottom: 1px solid rgba(197, 232, 181, 0.16);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 1.2rem;
+}
+
+.my-workshop-row:last-child {
+  border-bottom: 0;
+}
+
+.my-workshop-row h2 {
+  font-size: 1.35rem;
+  margin: 0.25rem 0;
+}
+
+.my-workshop-row p {
+  color: var(--color-ink-soft);
+  margin: 0.3rem 0;
+}
+
+.my-workshop-actions {
+  align-items: end;
+  display: grid;
+  gap: 0.75rem;
+  justify-items: end;
+}
+
+.my-workshop-actions span {
+  color: var(--color-vine);
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.my-workshop-actions button {
+  background: rgba(197, 232, 181, 0.1);
+  border: 1px solid rgba(197, 232, 181, 0.35);
+  border-radius: 10px;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.75rem 1rem;
+}
+
+@media (max-width: 720px) {
+  .my-workshop-row {
+    grid-template-columns: 1fr;
+  }
+
+  .my-workshop-actions {
+    justify-items: start;
+  }
+}
+
+/* ---------- Plantiful admin tools v1 ---------- */
+.admin-page {
+  padding-top: 3rem;
+}
+
+.admin-table {
+  background: rgba(20, 36, 25, 0.9);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.admin-user-row,
+.admin-workshop-row,
+.admin-order-row {
+  align-items: center;
+  border-bottom: 1px solid rgba(197, 232, 181, 0.16);
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.admin-user-row {
+  grid-template-columns: 70px minmax(120px, 1fr) minmax(180px, 1.2fr) 150px 110px;
+}
+
+.admin-workshop-row {
+  grid-template-columns: 70px minmax(120px, 0.8fr) minmax(220px, 1.3fr) minmax(140px, 1fr) 110px 110px;
+}
+
+.admin-order-row {
+  grid-template-columns: 70px minmax(120px, 0.8fr) minmax(240px, 1.5fr) 120px 160px;
+}
+
+.admin-user-row:last-child,
+.admin-workshop-row:last-child,
+.admin-order-row:last-child {
+  border-bottom: 0;
+}
+
+.admin-table-head {
+  background: rgba(197, 232, 181, 0.08);
+  color: var(--color-vine);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.admin-table select,
+.admin-table button {
+  background: rgba(197, 232, 181, 0.1);
+  border: 1px solid rgba(197, 232, 181, 0.35);
+  border-radius: 10px;
+  color: var(--color-ink);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  padding: 0.7rem 0.85rem;
+}
+
+.admin-table option {
+  background: #102016;
+  color: var(--color-ink);
+}
+
+@media (max-width: 980px) {
+  .admin-table {
+    overflow-x: auto;
+  }
+
+  .admin-user-row,
+  .admin-workshop-row,
+  .admin-order-row {
+    min-width: 900px;
+  }
+}

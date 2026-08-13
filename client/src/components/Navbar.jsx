@@ -1,4 +1,4 @@
-﻿function Navbar({ user, onLogin, onLogout, onNavigate }) {
+function Navbar({ user, cartCount, onLogin, onLogout, onNavigate }) {
   return (
     <nav className="navbar">
       <button className="logo" type="button" onClick={() => onNavigate("home")}>
@@ -24,6 +24,10 @@
         </button>
         <button type="button" onClick={() => onNavigate("contact")}>
           Contact
+        </button>
+        <button className="cart-nav-button" type="button" onClick={() => onNavigate("cart")}>
+          Cart
+          <span>{cartCount}</span>
         </button>
 
         {user ? (
@@ -51,4 +55,3 @@
 }
 
 export default Navbar;
-

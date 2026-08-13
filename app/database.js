@@ -1,4 +1,4 @@
-﻿const path = require("path");
+const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
 
 const DB_PATH = process.env.PLANTIFUL_DB_PATH || path.join(__dirname, "..", "db", "plantiful.db");
@@ -201,6 +201,75 @@ async function ensureEmailColumn(db) {
   }
 }
 
+
+async function ensureCommerceTables(db) {
+  await run(db, `
+    CREATE TABLE IF NOT EXISTS orders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      plant_id INTEGER NOT NULL,
+      quantity INTEGER NOT NULL DEFAULT 1,
+      status TEXT NOT NULL DEFAULT 'created',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (plant_id) REFERENCES plants(id)
+    )
+  `);
+
+  await run(db, `
+    CREATE TABLE IF NOT EXISTS wishlist_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      plant_id INTEGER NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (plant_id) REFERENCES plants(id)
+    )
+  `);
+
+  await run(db, `
+    CREATE TABLE IF NOT EXISTS checkout_orders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      items_json TEXT NOT NULL,
+      shipping_name TEXT NOT NULL,
+      shipping_email TEXT NOT NULL,
+      shipping_address TEXT NOT NULL,
+      shipping_city TEXT NOT NULL,
+      shipping_state TEXT NOT NULL,
+      shipping_zip TEXT NOT NULL,
+      delivery_notes TEXT,
+      payment_name TEXT NOT NULL,
+      payment_card_number TEXT NOT NULL,
+      payment_expiration TEXT NOT NULL,
+      payment_cvv TEXT NOT NULL,
+      payment_billing_zip TEXT NOT NULL,
+      subtotal REAL NOT NULL,
+      shipping_cost REAL NOT NULL,
+      total REAL NOT NULL,
+      status TEXT NOT NULL DEFAULT 'created',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+}
+
+async function ensureWorkshopTables(db) {
+  await run(db, `
+    CREATE TABLE IF NOT EXISTS workshop_registrations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      workshop_id TEXT NOT NULL,
+      workshop_title TEXT NOT NULL,
+      workshop_schedule TEXT NOT NULL,
+      preferred_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'reserved',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+}
 async function seedBaselineUsers(db) {
   for (const user of baselineUsers) {
     await run(
@@ -321,6 +390,8 @@ async function seedBaselineReviews(db) {
 async function initializeDatabase(db) {
   await createSchema(db);
   await ensureEmailColumn(db);
+  await ensureCommerceTables(db);
+  await ensureWorkshopTables(db);
   await seedBaselineUsers(db);
   await seedBaselinePlants(db);
   await seedBaselineReviews(db);
@@ -329,9 +400,15 @@ async function initializeDatabase(db) {
 async function resetDatabase(db) {
   // This intentionally wipes all learner-created accounts and resets IDs.
   await run(db, "DROP TABLE IF EXISTS reviews");
+  await run(db, "DROP TABLE IF EXISTS workshop_registrations");
+  await run(db, "DROP TABLE IF EXISTS checkout_orders");
+  await run(db, "DROP TABLE IF EXISTS wishlist_items");
+  await run(db, "DROP TABLE IF EXISTS orders");
   await run(db, "DROP TABLE IF EXISTS plants");
   await run(db, "DROP TABLE IF EXISTS users");
   await createSchema(db);
+  await ensureCommerceTables(db);
+  await ensureWorkshopTables(db);
   await seedBaselineUsers(db);
   await seedBaselinePlants(db);
   await seedBaselineReviews(db);
@@ -344,7 +421,14 @@ module.exports = {
   baselineUsers,
   closeDatabase,
   initializeDatabase,
+  ensureCommerceTables,
+  ensureWorkshopTables,
   openDatabase,
   resetDatabase,
 };
+
+
+
+
+
 

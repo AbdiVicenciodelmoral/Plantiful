@@ -1,12 +1,13 @@
 function AdminDashboard({ onNavigate }) {
   return (
-    <main className="page-shell">
+    <main className="page-shell admin-page">
       <section className="page-heading">
+        <p className="section-eyebrow">Admin</p>
         <h1>Admin Dashboard</h1>
         <p>
-          Future admin area for user management, plant catalog edits, order
-          management, and support messages. This is a good place for broken
-          access-control lessons.
+          Manage users, orders, workshop registrations, plant inventory, and
+          support messages. This area is intentionally useful for broken
+          access-control and privilege-escalation lessons.
         </p>
       </section>
 
@@ -14,11 +15,14 @@ function AdminDashboard({ onNavigate }) {
         <button className="action-tile" type="button" onClick={() => onNavigate("adminUsers")}>
           Manage Users
         </button>
-        <button className="action-tile" type="button" onClick={() => onNavigate("adminPlants")}>
-          Manage Plants
+        <button className="action-tile" type="button" onClick={() => onNavigate("adminWorkshops")}>
+          Manage Workshops
         </button>
         <button className="action-tile" type="button" onClick={() => onNavigate("adminOrders")}>
           Manage Orders
+        </button>
+        <button className="action-tile" type="button" onClick={() => onNavigate("adminPlants")}>
+          Manage Plants
         </button>
         <button className="action-tile" type="button" onClick={() => onNavigate("adminMessages")}>
           Support Messages

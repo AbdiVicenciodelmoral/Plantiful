@@ -1,18 +1,50 @@
 import { useState } from "react";
 
+const workshop = {
+  id: "potting-master",
+  title: "Potting Like a Master",
+  schedule: "Every Friday",
+};
+
 function WorkshopPotting({ user, onNavigate }) {
   const [preferredName, setPreferredName] = useState(user?.username || "");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   if (!user) {
     return null;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    setMessage("");
+    setError("");
+
+    const response = await fetch("/api/workshop-registrations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        workshopId: workshop.id,
+        workshopTitle: workshop.title,
+        workshopSchedule: workshop.schedule,
+        preferredName,
+        email,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.error || "Could not reserve your workshop seat.");
+      return;
+    }
+
     setMessage(
-      `Seat request saved for ${preferredName || user.username}. Confirmation will be sent to ${email}.`
+      `Seat reserved for ${data.registration.preferredName}. Confirmation will be sent to ${data.registration.email}.`
     );
   }
 
@@ -61,6 +93,7 @@ function WorkshopPotting({ user, onNavigate }) {
           <h2>Register for this class</h2>
 
           {message && <p className="success">{message}</p>}
+          {error && <p className="error">{error}</p>}
 
           <label htmlFor="preferred-name">Name you want to be called</label>
           <input
@@ -81,6 +114,9 @@ function WorkshopPotting({ user, onNavigate }) {
           />
 
           <button type="submit">Request seat</button>
+          <button type="button" className="secondary-action" onClick={() => onNavigate("accountWorkshops")}>
+            View my workshops
+          </button>
         </form>
       </section>
     </main>

@@ -2,16 +2,28 @@ import { useEffect, useMemo, useState } from "react";
 import Navbar from "./components/Navbar.jsx";
 import Account from "./pages/Account.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import AdminOrders from "./pages/AdminOrders.jsx";
+import AdminUsers from "./pages/AdminUsers.jsx";
+import AdminWorkshops from "./pages/AdminWorkshops.jsx";
 import CareGuides from "./pages/CareGuides.jsx";
+import Cart from "./pages/Cart.jsx";
+import CheckoutPayment from "./pages/CheckoutPayment.jsx";
+import CheckoutReview from "./pages/CheckoutReview.jsx";
+import CheckoutShipping from "./pages/CheckoutShipping.jsx";
 import Contact from "./pages/Contact.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Home from "./pages/Home.jsx";
 import LoginHelp from "./pages/LoginHelp.jsx";
 import Login from "./pages/Login.jsx";
+import MyWorkshops from "./pages/MyWorkshops.jsx";
+import OrderConfirmation from "./pages/OrderConfirmation.jsx";
+import Orders from "./pages/Orders.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
+import PlantDetail from "./pages/PlantDetail.jsx";
 import Register from "./pages/Register.jsx";
 import Reviews from "./pages/Reviews.jsx";
 import Shop from "./pages/Shop.jsx";
+import Wishlist from "./pages/Wishlist.jsx";
 import WorkshopPotting from "./pages/WorkshopPotting.jsx";
 import Workshops from "./pages/Workshops.jsx";
 
@@ -26,8 +38,12 @@ const pathToScreen = {
   "/admin/orders": "adminOrders",
   "/admin/plants": "adminPlants",
   "/admin/users": "adminUsers",
+  "/admin/workshops": "adminWorkshops",
   "/care-guides": "careGuides",
   "/cart": "cart",
+  "/checkout/shipping": "checkoutShipping",
+  "/checkout/payment": "checkoutPayment",
+  "/checkout/review": "checkoutReview",
   "/contact": "contact",
   "/dashboard": "dashboard",
   "/favorites": "favorites",
@@ -45,13 +61,88 @@ const screenToPath = Object.fromEntries(
   Object.entries(pathToScreen).map(([path, screen]) => [screen, path])
 );
 
+const emptyCheckoutData = {
+  shipping: {
+    fullName: "",
+    email: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    notes: "",
+  },
+  payment: {
+    cardholderName: "",
+    cardNumber: "",
+    expiration: "",
+    cvv: "",
+    billingZip: "",
+  },
+};
+
+function getCartCount() {
+  try {
+    const cartItems = JSON.parse(localStorage.getItem("plantifulCart")) || [];
+
+    return cartItems.reduce((total, item) => {
+      return total + Number(item.quantity || 0);
+    }, 0);
+  } catch {
+    return 0;
+  }
+}
+
+function getInitialRoute() {
+  const plantDetailMatch = window.location.pathname.match(/^\/shop\/(\d+)$/);
+  const orderMatch = window.location.pathname.match(/^\/orders\/(\d+)$/);
+
+  if (plantDetailMatch) {
+    return {
+      screen: "plantDetail",
+      plantId: plantDetailMatch[1],
+      orderId: null,
+    };
+  }
+
+  if (orderMatch) {
+    return {
+      screen: "orderConfirmation",
+      plantId: null,
+      orderId: orderMatch[1],
+    };
+  }
+
+  return {
+    screen: pathToScreen[window.location.pathname] || "home",
+    plantId: null,
+    orderId: null,
+  };
+}
+
 function App() {
-  const [screen, setScreen] = useState(() => {
-    return pathToScreen[window.location.pathname] || "home";
-  });
+  const initialRoute = getInitialRoute();
+  const [screen, setScreen] = useState(initialRoute.screen);
+  const [selectedPlantId, setSelectedPlantId] = useState(initialRoute.plantId);
+  const [selectedOrderId, setSelectedOrderId] = useState(initialRoute.orderId);
+  const [checkoutData, setCheckoutData] = useState(emptyCheckoutData);
+  const [cartCount, setCartCount] = useState(getCartCount);
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [loginNotice, setLoginNotice] = useState("");
+
+  useEffect(() => {
+    function refreshCartCount() {
+      setCartCount(getCartCount());
+    }
+
+    window.addEventListener("storage", refreshCartCount);
+    window.addEventListener("plantiful-cart-change", refreshCartCount);
+
+    return () => {
+      window.removeEventListener("storage", refreshCartCount);
+      window.removeEventListener("plantiful-cart-change", refreshCartCount);
+    };
+  }, []);
 
   useEffect(() => {
     fetch("/api/me", {
@@ -67,9 +158,19 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (screen === "plantDetail" && selectedPlantId) {
+      window.history.replaceState(null, "", `/shop/${selectedPlantId}`);
+      return;
+    }
+
+    if (screen === "orderConfirmation" && selectedOrderId) {
+      window.history.replaceState(null, "", `/orders/${selectedOrderId}`);
+      return;
+    }
+
     const path = screenToPath[screen] || "/";
     window.history.replaceState(null, "", path);
-  }, [screen]);
+  }, [screen, selectedPlantId, selectedOrderId]);
 
   const activeScreen = useMemo(() => {
     return screen;
@@ -81,8 +182,36 @@ function App() {
     }
   }, [activeScreen, loadingUser, user]);
 
-  function navigate(nextScreen) {
+  function navigate(nextScreen, options = {}) {
+    if (nextScreen === "plantDetail") {
+      setSelectedPlantId(options.plantId);
+    } else {
+      setSelectedPlantId(null);
+    }
+
+    if (nextScreen === "orderConfirmation") {
+      setSelectedOrderId(options.orderId);
+    } else if (nextScreen !== "orderConfirmation") {
+      setSelectedOrderId(null);
+    }
+
     setScreen(nextScreen);
+  }
+
+  function updateCheckoutData(nextData) {
+    setCheckoutData((currentData) => {
+      return {
+        ...currentData,
+        ...nextData,
+      };
+    });
+  }
+
+  function handleOrderPlaced(orderId) {
+    setCheckoutData(emptyCheckoutData);
+    navigate("orderConfirmation", {
+      orderId,
+    });
   }
 
   function showLogin() {
@@ -130,6 +259,7 @@ function App() {
     <>
       <Navbar
         user={user}
+        cartCount={cartCount}
         onNavigate={navigate}
         onLogin={showLogin}
         onLogout={handleLogout}
@@ -141,18 +271,10 @@ function App() {
         <>
           {activeScreen === "account" && <Account onNavigate={navigate} user={user} />}
           {activeScreen === "accountOrders" && (
-            <PlaceholderPage
-              title="Shopping History"
-              description="Future order history, invoices, shipment status, and IDOR testing area."
-              actions={["View order details", "Download invoice", "Report missing plant"]}
-            />
+            <Orders user={user} onNavigate={navigate} onRequireLogin={requireLogin} />
           )}
           {activeScreen === "accountWorkshops" && (
-            <PlaceholderPage
-              title="My Workshops"
-              description="Future class registrations, appointment changes, and workshop IDOR testing area."
-              actions={["View signup", "Cancel appointment", "Change attendee"]}
-            />
+            <MyWorkshops user={user} onNavigate={navigate} onRequireLogin={requireLogin} />
           )}
           {activeScreen === "admin" && <AdminDashboard onNavigate={navigate} />}
           {activeScreen === "adminMessages" && (
@@ -163,11 +285,7 @@ function App() {
             />
           )}
           {activeScreen === "adminOrders" && (
-            <PlaceholderPage
-              title="Manage Orders"
-              description="Future admin order management and broken access-control testing area."
-              actions={["Edit order", "Refund order", "Change order owner"]}
-            />
+            <AdminOrders onNavigate={navigate} />
           )}
           {activeScreen === "adminPlants" && (
             <PlaceholderPage
@@ -177,28 +295,40 @@ function App() {
             />
           )}
           {activeScreen === "adminUsers" && (
-            <PlaceholderPage
-              title="Manage Users"
-              description="Future admin user controls for role tampering, user deletion, and IDOR practice."
-              actions={["Edit user", "Delete user", "Change role"]}
-            />
+            <AdminUsers onNavigate={navigate} />
+          )}
+          {activeScreen === "adminWorkshops" && (
+            <AdminWorkshops onNavigate={navigate} />
           )}
           {activeScreen === "careGuides" && <CareGuides />}
           {activeScreen === "cart" && (
-            <PlaceholderPage
-              title="Cart"
-              description="Future cart page for quantity abuse, price tampering, and checkout workflow tests."
-              actions={["Update quantity", "Apply coupon", "Checkout"]}
+            <Cart user={user} onNavigate={navigate} onRequireLogin={requireLogin} />
+          )}
+          {activeScreen === "checkoutShipping" && (
+            <CheckoutShipping
+              checkoutData={checkoutData}
+              onCheckoutDataChange={updateCheckoutData}
+              onNavigate={navigate}
+            />
+          )}
+          {activeScreen === "checkoutPayment" && (
+            <CheckoutPayment
+              checkoutData={checkoutData}
+              onCheckoutDataChange={updateCheckoutData}
+              onNavigate={navigate}
+            />
+          )}
+          {activeScreen === "checkoutReview" && (
+            <CheckoutReview
+              checkoutData={checkoutData}
+              onNavigate={navigate}
+              onOrderPlaced={handleOrderPlaced}
             />
           )}
           {activeScreen === "contact" && <Contact />}
           {activeScreen === "home" && <Home />}
           {activeScreen === "favorites" && (
-            <PlaceholderPage
-              title="Favorite Plants"
-              description="Future saved plants page for IDOR testing around favorite IDs and user ownership."
-              actions={["Remove favorite", "Move to cart", "Share list"]}
-            />
+            <Wishlist user={user} onNavigate={navigate} onRequireLogin={requireLogin} />
           )}
           {activeScreen === "login" && (
             <Login
@@ -209,12 +339,11 @@ function App() {
             />
           )}
           {activeScreen === "loginHelp" && <LoginHelp onBackToLogin={showLogin} />}
+          {activeScreen === "orderConfirmation" && (
+            <OrderConfirmation orderId={selectedOrderId} onNavigate={navigate} />
+          )}
           {activeScreen === "orders" && (
-            <PlaceholderPage
-              title="Orders"
-              description="Future order list for shopping history, order details, and IDOR practice."
-              actions={["View order", "Track shipment", "Request refund"]}
-            />
+            <Orders user={user} onNavigate={navigate} onRequireLogin={requireLogin} />
           )}
           {activeScreen === "profile" && (
             <PlaceholderPage
@@ -237,6 +366,14 @@ function App() {
               }
             />
           )}
+          {activeScreen === "plantDetail" && (
+            <PlantDetail
+              plantId={selectedPlantId}
+              user={user}
+              onNavigate={navigate}
+              onRequireLogin={requireLogin}
+            />
+          )}
           {activeScreen === "shop" && <Shop />}
           {activeScreen === "workshopPotting" && (
             <WorkshopPotting user={user} onNavigate={navigate} />
@@ -256,3 +393,8 @@ function App() {
 }
 
 export default App;
+
+
+
+
+

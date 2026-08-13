@@ -1,4 +1,4 @@
-﻿const express = require("express");
+const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const {
@@ -174,6 +174,25 @@ function requireLogin(req, res, next) {
 
   req.user = user;
   next();
+}
+
+function requireAdmin(req, res, next) {
+  requireLogin(req, res, () => {
+    // Intentionally vulnerable for the training playground:
+    // This trusts the role value from the browser-controlled session cookie.
+    // Because the session cookie is only base64 JSON, learners can tamper with
+    // it and give themselves "admin" unless the session design is fixed.
+    //
+    // Remediation point:
+    // Store a signed server-side session id and load the user's role from the DB.
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        error: "Admin access required.",
+      });
+    }
+
+    next();
+  });
 }
 
 function setSessionCookie(res, user) {
@@ -353,6 +372,189 @@ app.get("/api/plants/search", (req, res) => {
   });
 });
 
+
+app.get("/api/plants/:id", (req, res) => {
+  const { id } = req.params;
+
+  db.get(
+    `
+      SELECT id, name, description, price, stock, care_level, light, water, image_url
+      FROM plants
+      WHERE id = ?
+    `,
+    [id],
+    (err, plant) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading plant details.",
+        });
+      }
+
+      if (!plant) {
+        return res.status(404).json({
+          error: `No plant found with id ${id}.`,
+        });
+      }
+
+      res.json({
+        plant,
+      });
+    }
+  );
+});
+
+app.post("/api/orders", requireLogin, (req, res) => {
+  const { plantId, quantity = 1 } = req.body;
+
+  if (!plantId) {
+    return res.status(400).json({
+      error: "A plant id is required.",
+    });
+  }
+
+  // Training note:
+  // This trusts the plantId and quantity from the browser. Later this can become
+  // a business-logic lesson for quantity abuse, price tampering, and order IDOR.
+  db.run(
+    `
+      INSERT INTO orders (user_id, plant_id, quantity)
+      VALUES (?, ?, ?)
+    `,
+    [req.user.id, plantId, Number(quantity)],
+    function handleOrderInsert(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while creating order.",
+        });
+      }
+
+      res.status(201).json({
+        message: "Order created.",
+        order: {
+          id: this.lastID,
+          userId: req.user.id,
+          plantId,
+          quantity: Number(quantity),
+          status: "created",
+        },
+      });
+    }
+  );
+});
+
+
+app.get("/api/wishlist", requireLogin, (req, res) => {
+  db.all(
+    `
+      SELECT
+        wishlist_items.id AS wishlist_id,
+        wishlist_items.user_id,
+        wishlist_items.created_at,
+        plants.id AS plant_id,
+        plants.name,
+        plants.description,
+        plants.price,
+        plants.stock,
+        plants.care_level,
+        plants.light,
+        plants.water,
+        plants.image_url
+      FROM wishlist_items
+      JOIN plants ON plants.id = wishlist_items.plant_id
+      WHERE wishlist_items.user_id = ?
+      ORDER BY wishlist_items.created_at DESC, wishlist_items.id DESC
+    `,
+    [req.user.id],
+    (err, items) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading wishlist.",
+          details: err.message,
+        });
+      }
+
+      res.json({
+        items,
+      });
+    }
+  );
+});
+
+app.delete("/api/wishlist/:id", requireLogin, (req, res) => {
+  const { id } = req.params;
+
+  // Intentionally vulnerable for the training playground:
+  // This deletes a wishlist row by URL id and only checks that the requester is
+  // logged in. It does NOT check:
+  // WHERE id = ? AND user_id = ?
+  //
+  // That means a logged-in learner can try changing the wishlist id and may
+  // delete another user's saved plant. This is the wishlist IDOR lesson.
+  //
+  // Remediation point:
+  // Add the ownership check with req.user.id.
+  db.run(
+    `
+      DELETE FROM wishlist_items
+      WHERE id = ?
+    `,
+    [id],
+    function handleDelete(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while removing wishlist item.",
+          details: err.message,
+        });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: `No wishlist item found with id ${id}.`,
+        });
+      }
+
+      res.json({
+        message: "Wishlist item removed.",
+      });
+    }
+  );
+});
+app.post("/api/wishlist", requireLogin, (req, res) => {
+  const { plantId } = req.body;
+
+  if (!plantId) {
+    return res.status(400).json({
+      error: "A plant id is required.",
+    });
+  }
+
+  // Training note:
+  // This creates a simple favorite/wishlist record. Future routes can expose
+  // wishlist item IDs for IDOR practice around ownership checks.
+  db.run(
+    `
+      INSERT INTO wishlist_items (user_id, plant_id)
+      VALUES (?, ?)
+    `,
+    [req.user.id, plantId],
+    function handleWishlistInsert(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while saving wishlist item.",
+        });
+      }
+
+      res.status(201).json({
+        message: "Plant added to wishlist.",
+        wishlistItem: {
+          id: this.lastID,
+          userId: req.user.id,
+          plantId,
+        },
+      });
+    }
+  );
+});
 app.get("/api/reviews", (req, res) => {
   db.all(
     `
@@ -479,6 +681,577 @@ app.put("/api/reviews/:id", requireLogin, (req, res) => {
   );
 });
 
+
+app.post("/api/checkout/orders", requireLogin, (req, res) => {
+  const {
+    items = [],
+    shipping = {},
+    payment = {},
+    subtotal = 0,
+    shippingCost = 0,
+    total = 0,
+  } = req.body;
+
+  if (!items.length) {
+    return res.status(400).json({
+      error: "Your cart is empty.",
+    });
+  }
+
+  if (!shipping.fullName || !shipping.email || !shipping.address || !shipping.city || !shipping.state || !shipping.zip) {
+    return res.status(400).json({
+      error: "Shipping information is incomplete.",
+    });
+  }
+
+  if (!payment.cardholderName || !payment.cardNumber || !payment.expiration || !payment.cvv || !payment.billingZip) {
+    return res.status(400).json({
+      error: "Payment information is incomplete.",
+    });
+  }
+
+  // Intentionally vulnerable training note:
+  // This stores fake payment details, delivery notes, and client-provided
+  // totals directly. That creates future lessons around sensitive data storage,
+  // price tampering, stored XSS in notes, and business-logic validation.
+  //
+  // Remediation point:
+  // Never store real card data, calculate totals server-side, tokenize payment
+  // details with a payment provider, and encode/sanitize user-controlled notes.
+  db.run(
+    `
+      INSERT INTO checkout_orders (
+        user_id,
+        items_json,
+        shipping_name,
+        shipping_email,
+        shipping_address,
+        shipping_city,
+        shipping_state,
+        shipping_zip,
+        delivery_notes,
+        payment_name,
+        payment_card_number,
+        payment_expiration,
+        payment_cvv,
+        payment_billing_zip,
+        subtotal,
+        shipping_cost,
+        total
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      req.user.id,
+      JSON.stringify(items),
+      shipping.fullName,
+      shipping.email,
+      shipping.address,
+      shipping.city,
+      shipping.state,
+      shipping.zip,
+      shipping.notes || "",
+      payment.cardholderName,
+      payment.cardNumber,
+      payment.expiration,
+      payment.cvv,
+      payment.billingZip,
+      Number(subtotal),
+      Number(shippingCost),
+      Number(total),
+    ],
+    function handleCheckoutOrderInsert(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while placing order.",
+          details: err.message,
+        });
+      }
+
+      res.status(201).json({
+        message: "Order placed.",
+        order: {
+          id: this.lastID,
+          total: Number(total),
+        },
+      });
+    }
+  );
+});
+
+
+app.get("/api/checkout/orders", requireLogin, (req, res) => {
+  db.all(
+    `
+      SELECT
+        id,
+        user_id,
+        items_json,
+        shipping_name,
+        shipping_city,
+        shipping_state,
+        total,
+        status,
+        created_at
+      FROM checkout_orders
+      WHERE user_id = ?
+      ORDER BY created_at DESC, id DESC
+    `,
+    [req.user.id],
+    (err, orders) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading order history.",
+        });
+      }
+
+      const parsedOrders = orders.map((order) => {
+        let items = [];
+
+        try {
+          items = JSON.parse(order.items_json);
+        } catch {
+          items = [];
+        }
+
+        return {
+          ...order,
+          items,
+        };
+      });
+
+      res.json({
+        orders: parsedOrders,
+      });
+    }
+  );
+});
+app.get("/api/checkout/orders/:id", requireLogin, (req, res) => {
+  const { id } = req.params;
+
+  // Intentionally vulnerable future lesson:
+  // This route looks up an order by id but does not check that user_id matches
+  // req.user.id. That means direct order URLs can become an IDOR exercise.
+  //
+  // Remediation point:
+  // Add: WHERE id = ? AND user_id = ?
+  db.get(
+    `
+      SELECT *
+      FROM checkout_orders
+      WHERE id = ?
+    `,
+    [id],
+    (err, order) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading order.",
+        });
+      }
+
+      if (!order) {
+        return res.status(404).json({
+          error: `No order found with id ${id}.`,
+        });
+      }
+
+      res.json({
+        order,
+      });
+    }
+  );
+});
+
+app.get("/api/workshop-registrations", requireLogin, (req, res) => {
+  db.all(
+    `
+      SELECT
+        id,
+        user_id,
+        workshop_id,
+        workshop_title,
+        workshop_schedule,
+        preferred_name,
+        email,
+        status,
+        created_at
+      FROM workshop_registrations
+      WHERE user_id = ?
+      ORDER BY created_at DESC, id DESC
+    `,
+    [req.user.id],
+    (err, registrations) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading workshop registrations.",
+          details: err.message,
+        });
+      }
+
+      res.json({
+        registrations,
+      });
+    }
+  );
+});
+
+app.post("/api/workshop-registrations", requireLogin, (req, res) => {
+  const {
+    workshopId = "",
+    workshopTitle = "",
+    workshopSchedule = "",
+    preferredName = "",
+    email = "",
+  } = req.body;
+
+  if (!workshopId || !workshopTitle || !workshopSchedule || !preferredName || !email) {
+    return res.status(400).json({
+      error: "Workshop, preferred name, and email are required.",
+    });
+  }
+
+  // Training note:
+  // This stores user-supplied preferredName and email exactly as submitted.
+  // Later, if an admin page renders these values as raw HTML, this can become
+  // a stored XSS lesson.
+  db.run(
+    `
+      INSERT INTO workshop_registrations (
+        user_id,
+        workshop_id,
+        workshop_title,
+        workshop_schedule,
+        preferred_name,
+        email
+      )
+      VALUES (?, ?, ?, ?, ?, ?)
+    `,
+    [
+      req.user.id,
+      workshopId,
+      workshopTitle,
+      workshopSchedule,
+      preferredName,
+      email,
+    ],
+    function handleInsert(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while saving workshop registration.",
+          details: err.message,
+        });
+      }
+
+      res.status(201).json({
+        message: "Workshop seat reserved.",
+        registration: {
+          id: this.lastID,
+          workshopId,
+          workshopTitle,
+          workshopSchedule,
+          preferredName,
+          email,
+          status: "reserved",
+        },
+      });
+    }
+  );
+});
+
+app.delete("/api/workshop-registrations/:id", requireLogin, (req, res) => {
+  const { id } = req.params;
+
+  // Intentionally vulnerable for the training playground:
+  // This deletes a registration by id and only checks that the requester is
+  // logged in. It does NOT check ownership with:
+  // WHERE id = ? AND user_id = ?
+  //
+  // That makes workshop cancellation another IDOR exercise.
+  db.run(
+    `
+      DELETE FROM workshop_registrations
+      WHERE id = ?
+    `,
+    [id],
+    function handleDelete(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while canceling workshop registration.",
+          details: err.message,
+        });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: `No workshop registration found with id ${id}.`,
+        });
+      }
+
+      res.json({
+        message: "Workshop registration canceled.",
+      });
+    }
+  );
+});
+
+app.get("/api/admin/users", requireAdmin, (req, res) => {
+  db.all(
+    `
+      SELECT id, username, email, role
+      FROM users
+      ORDER BY id
+    `,
+    (err, users) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading users.",
+          details: err.message,
+        });
+      }
+
+      res.json({
+        users,
+      });
+    }
+  );
+});
+
+app.patch("/api/admin/users/:id", requireAdmin, (req, res) => {
+  const { id } = req.params;
+  const { role = "user" } = req.body;
+  const allowedRoles = ["user", "manager", "admin"];
+
+  if (!allowedRoles.includes(role)) {
+    return res.status(400).json({
+      error: "Role must be user, manager, or admin.",
+    });
+  }
+
+  // Training note:
+  // This lets an admin change roles. Because admin authorization currently
+  // trusts a tamperable cookie, this becomes a privilege-escalation exercise.
+  db.run(
+    `
+      UPDATE users
+      SET role = ?
+      WHERE id = ?
+    `,
+    [role, id],
+    function handleRoleUpdate(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while updating user.",
+          details: err.message,
+        });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: `No user found with id ${id}.`,
+        });
+      }
+
+      res.json({
+        message: "User role updated.",
+      });
+    }
+  );
+});
+
+app.delete("/api/admin/users/:id", requireAdmin, (req, res) => {
+  const { id } = req.params;
+
+  if (String(req.user.id) === String(id)) {
+    return res.status(400).json({
+      error: "You cannot delete your own active admin account.",
+    });
+  }
+
+  // Training note:
+  // This deletes a user and related learner-created records. The route is
+  // admin-only, but admin status is currently based on a weak cookie, making
+  // this useful for broken access-control and privilege-escalation testing.
+  db.serialize(() => {
+    db.run("DELETE FROM reviews WHERE user_id = ?", [id]);
+    db.run("DELETE FROM wishlist_items WHERE user_id = ?", [id]);
+    db.run("DELETE FROM orders WHERE user_id = ?", [id]);
+    db.run("DELETE FROM checkout_orders WHERE user_id = ?", [id]);
+    db.run("DELETE FROM workshop_registrations WHERE user_id = ?", [id]);
+    db.run(
+      "DELETE FROM users WHERE id = ?",
+      [id],
+      function handleUserDelete(err) {
+        if (err) {
+          return res.status(500).json({
+            error: "Database error while deleting user.",
+            details: err.message,
+          });
+        }
+
+        if (this.changes === 0) {
+          return res.status(404).json({
+            error: `No user found with id ${id}.`,
+          });
+        }
+
+        res.json({
+          message: "User deleted.",
+        });
+      }
+    );
+  });
+});
+
+app.get("/api/admin/workshop-registrations", requireAdmin, (req, res) => {
+  db.all(
+    `
+      SELECT
+        workshop_registrations.id,
+        workshop_registrations.user_id,
+        users.username,
+        workshop_registrations.workshop_id,
+        workshop_registrations.workshop_title,
+        workshop_registrations.workshop_schedule,
+        workshop_registrations.preferred_name,
+        workshop_registrations.email,
+        workshop_registrations.status,
+        workshop_registrations.created_at
+      FROM workshop_registrations
+      JOIN users ON users.id = workshop_registrations.user_id
+      ORDER BY workshop_registrations.created_at DESC, workshop_registrations.id DESC
+    `,
+    (err, registrations) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading workshop registrations.",
+          details: err.message,
+        });
+      }
+
+      res.json({
+        registrations,
+      });
+    }
+  );
+});
+
+app.delete("/api/admin/workshop-registrations/:id", requireAdmin, (req, res) => {
+  const { id } = req.params;
+
+  db.run(
+    `
+      DELETE FROM workshop_registrations
+      WHERE id = ?
+    `,
+    [id],
+    function handleAdminWorkshopDelete(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while canceling workshop registration.",
+          details: err.message,
+        });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: `No workshop registration found with id ${id}.`,
+        });
+      }
+
+      res.json({
+        message: "Workshop registration canceled.",
+      });
+    }
+  );
+});
+
+app.get("/api/admin/orders", requireAdmin, (req, res) => {
+  db.all(
+    `
+      SELECT
+        checkout_orders.id,
+        checkout_orders.user_id,
+        users.username,
+        checkout_orders.items_json,
+        checkout_orders.shipping_name,
+        checkout_orders.shipping_email,
+        checkout_orders.shipping_city,
+        checkout_orders.shipping_state,
+        checkout_orders.total,
+        checkout_orders.status,
+        checkout_orders.created_at
+      FROM checkout_orders
+      JOIN users ON users.id = checkout_orders.user_id
+      ORDER BY checkout_orders.created_at DESC, checkout_orders.id DESC
+    `,
+    (err, orders) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while loading orders.",
+          details: err.message,
+        });
+      }
+
+      const parsedOrders = orders.map((order) => {
+        let items = [];
+
+        try {
+          items = JSON.parse(order.items_json);
+        } catch {
+          items = [];
+        }
+
+        return {
+          ...order,
+          items,
+        };
+      });
+
+      res.json({
+        orders: parsedOrders,
+      });
+    }
+  );
+});
+
+app.patch("/api/admin/orders/:id", requireAdmin, (req, res) => {
+  const { id } = req.params;
+  const { status = "processing" } = req.body;
+  const allowedStatuses = ["created", "processing", "shipped", "canceled", "refunded"];
+
+  if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({
+      error: "Invalid order status.",
+    });
+  }
+
+  db.run(
+    `
+      UPDATE checkout_orders
+      SET status = ?
+      WHERE id = ?
+    `,
+    [status, id],
+    function handleOrderStatusUpdate(err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Database error while updating order.",
+          details: err.message,
+        });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: `No order found with id ${id}.`,
+        });
+      }
+
+      res.json({
+        message: "Order status updated.",
+      });
+    }
+  );
+});
 app.post("/api/login", (req, res) => {
   // These values come from the JSON body sent by the React login form.
   const { username, password } = req.body;
@@ -651,5 +1424,12 @@ app.get(/^\/(?!api).*/, (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+
+
+
+
+
+
 
 
