@@ -24,7 +24,7 @@
     --glow-magic: 0 0 20px rgba(196, 140, 255, 0.35);
     --vine-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M4,4 C22,10 14,36 36,30 C56,25 46,56 66,50 C82,46 78,66 96,60' stroke='%233f8f52' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='20' cy='13' rx='8' ry='4.5' fill='%235cb56e' transform='rotate(-25 20 13)'/%3E%3Cellipse cx='41' cy='33' rx='8' ry='4.5' fill='%234a9f5c' transform='rotate(20 41 33)'/%3E%3Cellipse cx='67' cy='52' rx='8' ry='4.5' fill='%235cb56e' transform='rotate(-15 67 52)'/%3E%3Ccircle cx='92' cy='58' r='4' fill='%23c48cff'/%3E%3C/svg%3E");
     /*--vine-strip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 16'%3E%3Cpath d='M0,8 C10,2 20,14 30,8 C40,2 50,14 60,8' stroke='%233f8f52' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='15' cy='5' rx='5' ry='2.8' fill='%235cb56e' transform='rotate(-20 15 5)'/%3E%3Ccircle cx='30' cy='8' r='2' fill='%23c48cff'/%3E%3Cellipse cx='45' cy='11' rx='5' ry='2.8' fill='%234a9f5c' transform='rotate(20 45 11)'/%3E%3C/svg%3E");*/
-    --vine-strip: url("../assets/Ivy.png");
+    /*--vine-strip: url("../assets/Ivy.png");*/
 }
 
 * {
@@ -64,7 +64,7 @@ h1, h2, h3 {
     align-items: center;
     padding: 20px 48px 26px;
     background: var(--color-bg);
-    position: sticky;
+    position: relative;
     top: 0;
     z-index: 10;
 }
@@ -74,13 +74,18 @@ h1, h2, h3 {
     position: absolute;
     left: 0;
     right: 0;
-    /*bottom: 0;*/
-    bottom: -100px;
-    height: 120px; /* visible area */
-    background-image: var(--vine-strip);
-    background-repeat: repeat-x;
-    background-size: 150px 120px; /* Force the pic to shrink */
-    background-position: bottom left;
+    bottom: 0;
+    height: 4px;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 255, 100, 1),
+        rgba(0, 255, 100, 0.4)
+    );
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+
+    /* Glow */
+    box-shadow: 0 0 12px rgba(0, 255, 100, 0.9);
 }
 
 .logo {
