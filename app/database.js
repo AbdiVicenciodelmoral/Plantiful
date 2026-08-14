@@ -8,26 +8,62 @@ const DB_PATH = process.env.PLANTIFUL_DB_PATH || path.join(__dirname, "..", "db"
 const baselineUsers = [
   {
     username: "admin",
-    password: "plantiful123",
+    password: "GreenhouseAdmin!23",
     email: "admin@plantiful.local",
     role: "admin",
   },
   {
-    username: "student",
-    password: "learn123",
-    email: "student@plantiful.local",
+    username: "johnson123",
+    password: "MapleDesk2026",
+    email: "johnson123@plantiful.local",
     role: "user",
   },
   {
-    username: "manager",
-    password: "inventory123",
-    email: "manager@plantiful.local",
+    username: "maria.gomez",
+    password: "MonsteraSun18",
+    email: "maria.gomez@plantiful.local",
+    role: "user",
+  },
+  {
+    username: "sarah.lee",
+    password: "PothosShelf44",
+    email: "sarah.lee@plantiful.local",
+    role: "user",
+  },
+  {
+    username: "michael.chen",
+    password: "SnakePlant72",
+    email: "michael.chen@plantiful.local",
+    role: "user",
+  },
+  {
+    username: "jasmine.w",
+    password: "CalatheaMist9",
+    email: "jasmine.w@plantiful.local",
+    role: "user",
+  },
+  {
+    username: "robert.king",
+    password: "SoilMix2026",
+    email: "robert.king@plantiful.local",
     role: "manager",
   },
   {
-    username: "victim",
-    password: "password123",
-    email: "victim@plantiful.local",
+    username: "emily.stone",
+    password: "LeafyWindow15",
+    email: "emily.stone@plantiful.local",
+    role: "user",
+  },
+  {
+    username: "david.martin",
+    password: "ZZPlantGarage5",
+    email: "david.martin@plantiful.local",
+    role: "user",
+  },
+  {
+    username: "nina.patel",
+    password: "FiddleFig31",
+    email: "nina.patel@plantiful.local",
     role: "user",
   },
 ];
@@ -426,6 +462,7 @@ module.exports = {
   openDatabase,
   resetDatabase,
 };
+
 
 
 
