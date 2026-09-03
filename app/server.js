@@ -1257,32 +1257,61 @@ app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
   // Intentionally insecure for your training playground:
-  // This query directly inserts user input into SQL.
-  // That makes the route vulnerable to SQL injection.
+  // This first query directly inserts the username into SQL. It checks whether
+  // the account exists before checking the password, which lets learners
+  // enumerate valid usernames from the different error messages.
   //
-  // Secure code would use placeholders like:
-  // SELECT * FROM users WHERE username = ? AND password = ?
-  const loginQuery = `SELECT id, username, role FROM users WHERE username = '${username}' AND password = '${password}' LIMIT 1`;
+  // Remediation point:
+  // Use one generic error message for both cases, such as:
+  // "Invalid username or password."
+  const usernameLookupQuery = `SELECT id, username, role FROM users WHERE username = '${username}' LIMIT 1`;
 
-  // db.get() runs a SELECT query and returns the first matching row.
-  db.get(loginQuery, (err, user) => {
+  db.get(usernameLookupQuery, (err, account) => {
     if (err) {
       return res.status(500).json({
         error: "Database error during login.",
       });
     }
 
-    // If no matching account exists, keep the user on the login page.
-    if (!user) {
+    // Intentionally vulnerable for the training playground:
+    // This response tells the learner that the username does not exist.
+    // That information leak is username enumeration.
+    if (!account) {
       return res.status(401).json({
-        error: "Invalid username or password.",
+        error: "Username not found.",
       });
     }
 
-    const sessionData = setSessionCookie(res, user);
+    // Intentionally insecure for your training playground:
+    // This second query directly inserts both username and password into SQL.
+    // Quote characters can still break out of the string, so the login remains
+    // SQL-injection vulnerable for authorization-bypass practice.
+    //
+    // Secure code would use placeholders like:
+    // SELECT * FROM users WHERE username = ? AND password = ?
+    const loginQuery = `SELECT id, username, role FROM users WHERE username = '${username}' AND password = '${password}' LIMIT 1`;
 
-    res.json({
-      user: sessionData,
+    db.get(loginQuery, (loginErr, user) => {
+      if (loginErr) {
+        return res.status(500).json({
+          error: "Database error during login.",
+        });
+      }
+
+      // Intentionally vulnerable for the training playground:
+      // This response tells the learner that the username exists, but the
+      // password is wrong. That confirms a valid account name.
+      if (!user) {
+        return res.status(401).json({
+          error: "Password is incorrect.",
+        });
+      }
+
+      const sessionData = setSessionCookie(res, user);
+
+      res.json({
+        user: sessionData,
+      });
     });
   });
 });

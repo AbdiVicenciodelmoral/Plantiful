@@ -69,7 +69,7 @@ function Login({ notice, onCreateAccount, onLogin, onLoginHelp }) {
           Forgot username or password?
         </button>
 
-        <p className="hint">Training account: student / learn123</p>
+        
       </section>
     </main>
   );
