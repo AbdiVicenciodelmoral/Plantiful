@@ -116,7 +116,7 @@ const baselinePlants = [
     stock: 20,
     care_level: "Easy",
     light: "Full Moon preferred",
-    water: "Water every 2-3 weeks",
+    water: "Water once per lunar cycle",
     image_url: "/loadImage?filename=Wolfsbane.PNG",
   },
   {
