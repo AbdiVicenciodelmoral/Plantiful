@@ -47,9 +47,9 @@ const testimonials = [
     plant: "Monstera Deliciosa",
   },
   {
-    quote: "I totally like plants!",
+      quote: "I haven't been seen in weeks, but the plants have never looked better.",
     name: "Laura Messick",
-    plant: "Potting Like a Master",
+    plant: "Audrey II",
   },
   {
     quote: "The watering guide finally helped me stop overthinking it.",
@@ -146,15 +146,9 @@ function Home() {
             <a href="/care-guides">Browse Care Guides</a>
           </div>
         </div>
-
-        <div className="hero-plant-stage" aria-label="Indoor plant arrangement">
-          <div className="hero-plant-orb hero-plant-orb-left"></div>
-          <div className="hero-plant-orb hero-plant-orb-center"></div>
-          <div className="hero-plant-orb hero-plant-orb-right"></div>
-          <div className="hero-plant-stem hero-plant-stem-one"></div>
-          <div className="hero-plant-stem hero-plant-stem-two"></div>
-          <div className="hero-plant-stem hero-plant-stem-three"></div>
-          <div className="hero-plant-pot"></div>
+              {/*Editing this portion to have one image*/}
+              <div className="hero-plant" aria-label="Indoor plant arrangement">
+                  <img className="main-image" src="../../public/images/plants/Plants.svg" alt="Plants" />
         </div>
       </section>
 
@@ -213,17 +207,18 @@ function Home() {
 
       <section className="home-section care-spotlight">
         <div className="care-spotlight-art">
-          <div className="spotlight-leaf spotlight-leaf-one"></div>
+          {/*<div className="spotlight-leaf spotlight-leaf-one"></div>
           <div className="spotlight-leaf spotlight-leaf-two"></div>
-          <div className="spotlight-leaf spotlight-leaf-three"></div>
+          <div className="spotlight-leaf spotlight-leaf-three"></div>*/}
+          <img className="main-image" src="../../public/images/plants/Audrey2.PNG" alt="Audrey II" />
         </div>
 
         <div>
           <p className="section-eyebrow">Plant care spotlight</p>
-          <h2>Meet the Monstera</h2>
+          <h2>Meet the Audrey II</h2>
           <p>
-            Those dramatic leaves are surprisingly easy to care for. Learn
-            about lighting, watering, soil, humidity, common problems, and more.
+                      Despite its appetite for humans, Audrey II is surprisingly easy to care for.
+                      Learn about lighting, watering, soil, humidity, and safer feeding options.
           </p>
 
           <div className="spotlight-facts">

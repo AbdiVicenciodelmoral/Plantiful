@@ -2,7 +2,7 @@ function Navbar({ user, cartCount, onLogin, onLogout, onNavigate }) {
   return (
     <nav className="navbar">
       <button className="logo" type="button" onClick={() => onNavigate("home")}>
-          <img src="../../assets/wolfsbane2.png" alt="Plantiful logo" width="22" height="22" />
+              <img src="../../public/images/plants/9up_glow.png" alt="Plantiful logo" width="22" height="22" />
           Plantiful
       </button>
 

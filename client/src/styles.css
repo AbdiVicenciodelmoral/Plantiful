@@ -4,7 +4,8 @@
    accents, hand-drawn ivy as the structural motif.
    ============================================ */
 :root {
-    --color-bg: #0c1712;
+    /*--color-bg: #0c1712;*/
+    --color-bg: #000000;
     --color-bg-alt: #101d16;
     --color-card: #142419;
     --color-ink: #e8f3e4;
@@ -22,9 +23,10 @@
     --shadow-tag: 0 10px 26px -10px rgba(0, 0, 0, 0.6);
     --glow-soft: 0 0 18px rgba(124, 255, 160, 0.25);
     --glow-magic: 0 0 20px rgba(196, 140, 255, 0.35);
-    --vine-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M4,4 C22,10 14,36 36,30 C56,25 46,56 66,50 C82,46 78,66 96,60' stroke='%233f8f52' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='20' cy='13' rx='8' ry='4.5' fill='%235cb56e' transform='rotate(-25 20 13)'/%3E%3Cellipse cx='41' cy='33' rx='8' ry='4.5' fill='%234a9f5c' transform='rotate(20 41 33)'/%3E%3Cellipse cx='67' cy='52' rx='8' ry='4.5' fill='%235cb56e' transform='rotate(-15 67 52)'/%3E%3Ccircle cx='92' cy='58' r='4' fill='%23c48cff'/%3E%3C/svg%3E");
+    /*--vine-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M4,4 C22,10 14,36 36,30 C56,25 46,56 66,50 C82,46 78,66 96,60' stroke='%233f8f52' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='20' cy='13' rx='8' ry='4.5' fill='%235cb56e' transform='rotate(-25 20 13)'/%3E%3Cellipse cx='41' cy='33' rx='8' ry='4.5' fill='%234a9f5c' transform='rotate(20 41 33)'/%3E%3Cellipse cx='67' cy='52' rx='8' ry='4.5' fill='%235cb56e' transform='rotate(-15 67 52)'/%3E%3Ccircle cx='92' cy='58' r='4' fill='%23c48cff'/%3E%3C/svg%3E");*/
     /*--vine-strip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 16'%3E%3Cpath d='M0,8 C10,2 20,14 30,8 C40,2 50,14 60,8' stroke='%233f8f52' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='15' cy='5' rx='5' ry='2.8' fill='%235cb56e' transform='rotate(-20 15 5)'/%3E%3Ccircle cx='30' cy='8' r='2' fill='%23c48cff'/%3E%3Cellipse cx='45' cy='11' rx='5' ry='2.8' fill='%234a9f5c' transform='rotate(20 45 11)'/%3E%3C/svg%3E");*/
     /*--vine-strip: url("../assets/Ivy.png");*/
+    --vine-corner: url("../../public/images/plants/9.png");
 }
 
 * {
@@ -91,7 +93,8 @@ h1, h2, h3 {
 .logo {
     border: none;
     background: transparent;
-    color: var(--color-glow);
+    /*color: var(--color-glow);*/
+    color: #00FF64;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -101,7 +104,8 @@ h1, h2, h3 {
     font-weight: 600;
     font-style: italic;
     padding: 0;
-    text-shadow: 0 0 20px rgba(124, 255, 160, 0.55), 0 0 40px rgba(124, 255, 160, 0.2);
+    /*text-shadow: 0 0 20px rgba(124, 255, 160, 0.55), 0 0 40px rgba(124, 255, 160, 0.2);*/
+    text-shadow: 0 0 4px rgba(0, 255, 100, 0.9), 0 0 12px rgba(0, 255, 100, 0.6), 0 0 24px rgba(0, 255, 100, 0.25);
 }
 
 .logo svg {
@@ -783,10 +787,14 @@ h1, h2, h3 {
 
 .plant-image {
   aspect-ratio: 4 / 3;
-  background: var(--color-bg-alt);
+  /*background: var(--color-bg-alt);*/
+  background: #000000;
   border-radius: 8px;
-  object-fit: cover;
-  width: 100%;
+  /*object-fit: cover;
+  width: 100%;*/
+  height: 100%;
+  width: auto;
+  justify-content: center;
 }
 
 .plant-meta {
@@ -1366,6 +1374,8 @@ h1, h2, h3 {
   color: var(--color-glow);
 }
 
+/* this was blocking my fireflies */
+/*
 .hero-plant-stage {
   aspect-ratio: 1 / 1;
   background:
@@ -1444,6 +1454,33 @@ h1, h2, h3 {
   position: absolute;
   width: 28%;
 }
+    */
+
+.hero-plant {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.main-image {
+    width: 75%;
+    height: auto; /* keeps the proportions */
+}
+
+.hero-plant::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient( circle, transparent 0%, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0.95) 60%, #000 80% );
+    z-index: 1;
+}
+
+.firefly, .firefly magic {
+    position: absolute;
+    z-index: 2;
+}
+
 
 .global-search-panel,
 .home-section,
@@ -1528,6 +1565,7 @@ h1, h2, h3 {
   position: absolute;
   top: -14px;
   width: 58px;
+  background-repeat: no-repeat;
 }
 
 .explore-card p {
@@ -1581,13 +1619,16 @@ h1, h2, h3 {
 }
 
 .care-spotlight-art {
-  aspect-ratio: 4 / 3;
-  background: var(--color-card);
+  /*aspect-ratio: 4 / 3;*/
+  background: #000000;
   border: 1px solid var(--color-line);
   border-radius: 24px;
   box-shadow: var(--shadow-tag), var(--glow-soft);
   overflow: hidden;
-  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: auto;
 }
 
 .spotlight-leaf {
