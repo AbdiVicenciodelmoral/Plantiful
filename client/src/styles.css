@@ -358,17 +358,18 @@ h1, h2, h3 {
     pointer-events: none;
 }
 
-.cards .card:nth-child(1) {
+/*.cards .card:nth-child(1), .card:nth-child(5) {
     transform: rotate(-3deg);
 }
 
-.cards .card:nth-child(2) {
+.cards .card:nth-child(2), .card:nth-child(4), .card:nth-child(6) {
     transform: rotate(2deg);
 }
 
 .cards .card:nth-child(3) {
     transform: rotate(-1.5deg);
-}
+}*/
+
 
 .card:hover {
     transform: rotate(0deg) translateY(-4px);
