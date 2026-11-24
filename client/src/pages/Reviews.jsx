@@ -124,7 +124,9 @@ function Reviews({ user, onRequireLogin }) {
   }
 
   return (
-    <main className="page-shell">
+      <main className="page-shell">
+          <img src="../../public/images/plants/7.png" class="vine vine-reviews-1"></img>
+          <img src="../../public/images/plants/8.png" class="vine vine-reviews-2"></img>
       <section className="page-heading">
         <h1>Plant Reviews</h1>
         <p>

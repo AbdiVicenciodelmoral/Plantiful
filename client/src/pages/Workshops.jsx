@@ -37,7 +37,9 @@ function Workshops({ user, onNavigate, onRequireLogin }) {
   }
 
   return (
-    <main className="page-shell">
+      <main className="page-shell">
+          <img src="../../public/images/plants/5.png" class="vine vine-WS1"></img>
+          <img src="../../public/images/plants/2.png" class="vine vine-WS2"></img>
       <section className="page-heading">
         <h1>Classes & Workshops</h1>
         <p>

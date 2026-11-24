@@ -32,7 +32,9 @@ function Login({ notice, onCreateAccount, onLogin, onLoginHelp }) {
   }
 
   return (
-    <main className="auth-page">
+      <main className="auth-page">
+          <img src="../../public/images/plants/2.png" class="vine vine-login-1"></img>
+          <img src="../../public/images/plants/7.png" class="vine vine-login-2"></img>
       <section className="auth-panel">
         <h1>Login</h1>
 

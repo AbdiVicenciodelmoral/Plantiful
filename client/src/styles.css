@@ -682,7 +682,8 @@ h1, h2, h3 {
    ============================================ */
 
 .page-shell {
-  padding: 96px 48px 56px;
+    position: relative;
+    padding: 48px 48px 56px;
 }
 
 .page-heading {
@@ -701,11 +702,112 @@ h1, h2, h3 {
   line-height: 1.5;
 }
 
+/* Vine decorations */
+.vine {
+    position: absolute;
+    top: 0;
+    pointer-events: none;
+    filter: saturate(1.8) brightness(1.1);
+}
+
+.vine-shop-1 {
+    left: max(80%, 940px);
+    width: 120px;
+    top: -5px;
+}
+
+.vine-shop-2 {
+    left: max(60%, 840px);
+    width: 120px;
+    transform: scaleY(1.3);
+    top: 26px;
+}
+
+.vine-shop-3 {
+    left: max(45%, 780px);
+    width: 80px;
+}
+
+.vine-KC {
+    left: max(75%, 1155px);
+    width: 250px;
+}
+
+.vine-WS1 {
+    left: max(50%, 780px);
+    top: -25px;
+    width: 100px;
+    transform: scaleY(0.8);
+}
+
+.vine-WS2 {
+    left: max(75%, 1100px);
+    width: 150px;
+    transform: scaleY(1.3);
+    top: 26px;
+}
+
+.vine-reviews-1 {
+    left: max(60%, 990px);
+    width: 180px;
+}
+
+.vine-reviews-2 {
+    left: max(85%, 1150px);
+    width: 120px;
+    filter: saturate(1.8) brightness(1.2);
+}
+
+.vine-cart-1 {
+    left: max(45%, 500px);
+    width: 120px;
+}
+
+.vine-cart-2 {
+    left: max(60%, 600px);
+    width: 120px;
+    filter: saturate(1.8) brightness(1.2) drop-shadow(0 0 4px rgba(0,255,100,.8)) drop-shadow(0 0 12px rgba(0,255,100,.4));
+}
+
+.vine-cart-3 {
+    left: max(80%, 650px);
+    width: 120px;
+}
+
+.vine-contact-1 {
+    left: max(45%, 785px);
+    width: 120px;
+}
+
+.vine-contact-2 {
+    left: max(65%, 870px);
+    width: 150px;
+    transform: scaleX(-1);
+}
+
+.vine-contact-3 {
+    left: max(80%, 1000px);
+    width: 170px;
+    top: 20px;
+    transform: scaleX(-1) scaleY(1.3);
+}
+
+.vine-login-1 {
+    left: 15%;
+    width: 200px;
+    filter: saturate(1.8) brightness(1.2);
+}
+
+.vine-login-2 {
+    left: 75%;
+    width: 200px;
+}
+/*-----------------------*/
 .toolbar-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 28px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 28px 0;
 }
 
 .toolbar-row input {

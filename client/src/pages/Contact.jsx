@@ -1,6 +1,9 @@
 function Contact() {
   return (
-    <main className="page-shell">
+      <main className="page-shell">
+          <img src="../../public/images/plants/6.png" class="vine vine-contact-1"></img>
+          <img src="../../public/images/plants/1.png" class="vine vine-contact-2"></img>
+          <img src="../../public/images/plants/7.png" class="vine vine-contact-3"></img>
       <section className="page-heading">
         <h1>Contact Us</h1>
         <p>

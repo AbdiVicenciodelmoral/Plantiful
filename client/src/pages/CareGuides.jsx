@@ -59,7 +59,8 @@ function CareGuides() {
   }, [activeCategory, documents]);
 
   return (
-    <main className="page-shell">
+      <main className="page-shell">
+          <img src="../../public/images/plants/1.png" class="vine vine-KC"></img>
       <section className="knowledge-hero">
         <p className="section-eyebrow">Plantiful document archive</p>
         <h1>Knowledge Center</h1>

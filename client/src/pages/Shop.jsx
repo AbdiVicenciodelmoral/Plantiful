@@ -71,7 +71,10 @@ function Shop() {
     : "All Plant Inventory";
 
   return (
-    <main className="page-shell">
+      <main className="page-shell">
+          <img src="../../public/images/plants/4.png" class="vine vine-shop-3"></img>
+          <img src="../../public/images/plants/3.png" class="vine vine-shop-1"></img>
+          <img src="../../public/images/plants/6.png" class="vine vine-shop-2"></img>
       <section className="page-heading">
         <h1>Shop Plants</h1>
         <p>

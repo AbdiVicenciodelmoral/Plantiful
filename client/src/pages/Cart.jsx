@@ -90,7 +90,10 @@ function Cart({ user, onNavigate, onRequireLogin }) {
   }, [plants]);
 
   return (
-    <main className="page-shell checkout-page">
+      <main className="page-shell checkout-page">
+          <img src="../../public/images/plants/4.png" class="vine vine-cart-1"></img>
+          <img src="../../public/images/plants/8.png" class="vine vine-cart-2"></img>
+          <img src="../../public/images/plants/5.png" class="vine vine-cart-3"></img>
       <section className="page-heading">
         <p className="section-eyebrow">Order process</p>
         <h1>Your Cart</h1>
