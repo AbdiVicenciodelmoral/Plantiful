@@ -129,12 +129,12 @@ function Home() {
     <>
       <section className="home-hero">
         <div className="firefly" style={{ top: "18%", left: "72%", animationDelay: "0s" }}></div>
-        <div className="firefly magic" style={{ top: "55%", left: "88%", animationDelay: "1.3s" }}></div>
+        <div className="firefly" style={{ top: "55%", left: "88%", animationDelay: "1.3s" }}></div>     {/*was firefly magic*/}
         <div className="firefly" style={{ top: "78%", left: "60%", animationDelay: "2.6s" }}></div>
-        <div className="firefly magic" style={{ top: "35%", left: "50%", animationDelay: "0.8s" }}></div>
+        <div className="firefly" style={{ top: "35%", left: "50%", animationDelay: "0.8s" }}></div>     {/*was firefly magic*/}
 
         <div className="home-hero-copy">
-          <p className="section-eyebrow">Plantiful</p>
+          {/*<p className="section-eyebrow">Plantiful</p>*/}
           <h1>Find your next favorite plant. Learn how to help it thrive.</h1>
           <p>
             Plants, practical care advice, workshops, and resources for every
